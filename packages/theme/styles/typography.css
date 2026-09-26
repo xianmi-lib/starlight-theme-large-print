@@ -5,16 +5,19 @@
  */
 
 :root {
-	/* Serif reading stack with CJK-aware fallbacks; the optional font packs
-	   register 'Noto Serif SC' / 'Noto Serif TC' at the front. */
-	--lp-serif-stack:
-		'Noto Serif SC',
-		'Noto Serif TC',
+	/* Serif reading fallback stack with CJK-aware fallbacks. The plugin injects
+	   `--lp-serif-pack: '<Family>',` when a font pack is enabled (nothing is
+	   declared here by default — `var(--lp-serif-pack,)` resolves to empty).
+	   The pack family must lead the stack, otherwise a locally installed
+	   same-named font of the other script shadows the webfont (e.g. local
+	   Noto Serif SC shadowing the TC webfont on TW pages). */
+	--lp-serif-fallback:
 		'Songti SC',
 		'STSong',
 		'SimSun',
 		'Noto Serif CJK SC',
 		serif;
+	--lp-serif-stack: var(--lp-serif-pack,) var(--lp-serif-fallback);
 }
 
 /* Serif reading body. */
