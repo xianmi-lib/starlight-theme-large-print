@@ -1,0 +1,23 @@
+{
+	"name": "starlight-theme-large-print-font-noto-serif-sc",
+	"version": "0.1.0",
+	"description": "Self-hosted Noto Serif SC (Simplified Chinese) font pack for starlight-theme-large-print. Google Fonts unicode-range woff2 subsets served from your own site.",
+	"license": "MIT",
+	"type": "module",
+	"exports": {
+		"./fonts.css": "./fonts.css",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"sideEffects": false,
+	"keywords": [
+		"starlight",
+		"starlight-theme",
+		"font",
+		"noto-serif-sc",
+		"chinese",
+		"cjk"
+	]
+}

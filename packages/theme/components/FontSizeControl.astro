@@ -1,0 +1,75 @@
+---
+/*
+ * FontSizeControl — reader font-size switcher (A− / reset / A+).
+ * Five steps around the theme base size; the choice is persisted in
+ * localStorage and applied through `--lp-user-size` on <html>.
+ * A theme-injected inline script re-applies the saved value before first paint.
+ *
+ * Usage: place inside a Header override, e.g. next to <ThemeSelect />.
+ */
+---
+
+<lp-font-size class="lp-font-size sl-flex" role="group" aria-label="Font size">
+	<button type="button" data-lp-dec aria-label="Decrease font size" title="Decrease font size">A−</button>
+	<button type="button" data-lp-reset aria-label="Reset font size" title="Reset font size">A</button>
+	<button type="button" data-lp-inc aria-label="Increase font size" title="Increase font size">A+</button>
+</lp-font-size>
+
+<script>
+	const LP_KEY = 'lp-font-size'
+	const LP_STEPS = ['14px', '15.5px', '17px', '19px', '22px']
+	const LP_DEFAULT = 2
+
+	function currentStep(): number {
+		const v = document.documentElement.style.getPropertyValue('--lp-user-size').trim()
+		const i = LP_STEPS.indexOf(v)
+		return i === -1 ? LP_DEFAULT : i
+	}
+
+	function apply(step: number, persist = true) {
+		const clamped = Math.max(0, Math.min(LP_STEPS.length - 1, step))
+		if (clamped === LP_DEFAULT) {
+			document.documentElement.style.removeProperty('--lp-user-size')
+			if (persist) localStorage.removeItem(LP_KEY)
+		} else {
+			document.documentElement.style.setProperty('--lp-user-size', LP_STEPS[clamped]!)
+			if (persist) localStorage.setItem(LP_KEY, LP_STEPS[clamped]!)
+		}
+	}
+
+	for (const el of document.querySelectorAll('lp-font-size')) {
+		el.querySelector('[data-lp-dec]')?.addEventListener('click', () => apply(currentStep() - 1))
+		el.querySelector('[data-lp-inc]')?.addEventListener('click', () => apply(currentStep() + 1))
+		el.querySelector('[data-lp-reset]')?.addEventListener('click', () => apply(LP_DEFAULT))
+	}
+</script>
+
+<style>
+	@layer starlight.core {
+		lp-font-size {
+			align-items: center;
+			gap: 0.125rem;
+		}
+		lp-font-size button {
+			background: none;
+			border: none;
+			padding: 0.375rem 0.25rem;
+			cursor: pointer;
+			color: var(--sl-color-gray-1);
+			font-weight: 600;
+			line-height: 1;
+		}
+		lp-font-size button:hover {
+			color: var(--sl-color-text-accent);
+		}
+		lp-font-size [data-lp-dec] {
+			font-size: 0.75rem;
+		}
+		lp-font-size [data-lp-reset] {
+			font-size: 0.9375rem;
+		}
+		lp-font-size [data-lp-inc] {
+			font-size: 1.25rem;
+		}
+	}
+</style>
