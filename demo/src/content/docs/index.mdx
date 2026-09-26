@@ -1,0 +1,35 @@
+---
+title: Large Print
+description: Elder-friendly reading theme for Astro Starlight.
+template: splash
+hero:
+  tagline: Large serif type, a reader font-size control, warm dark mode, and optional self-hosted CJK webfonts — for long-form reading sites with older audiences.
+  actions:
+    - text: Getting started
+      link: /getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/xianmi-library/starlight-theme-large-print
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What you get
+
+<CardGrid stagger>
+	<Card title="Large serif type" icon="pencil">
+		17px body text with 1.85 line height by default, in a comfortable serif — gentle on aging eyes during long reading sessions.
+	</Card>
+	<Card title="Reader font-size control" icon="setting">
+		The `A− A A+` control in the header lets every reader pick from five sizes (14–22px). The choice is remembered across visits. Try it now — it's right up there.
+	</Card>
+	<Card title="Warm dark mode" icon="moon">
+		The dark theme uses a paper-like warm brown instead of blue-black. Toggle the theme icon to feel the difference.
+	</Card>
+	<Card title="Self-hosted CJK webfonts" icon="translate">
+		Optional Noto Serif SC/TC packs served from your own site via `unicode-range` subsets — visitors download only what their page needs. See [中文排版](/cjk/).
+	</Card>
+</CardGrid>

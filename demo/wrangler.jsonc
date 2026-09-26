@@ -1,0 +1,9 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "starlight-theme-large-print",
+	"compatibility_date": "2026-09-26",
+	"assets": {
+		"directory": "./dist"
+	},
+	"workers_dev": true
+}

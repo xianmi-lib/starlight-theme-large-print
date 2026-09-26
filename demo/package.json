@@ -1,0 +1,22 @@
+{
+	"name": "starlight-theme-large-print-demo",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"deploy": "npm run build && wrangler deploy"
+	},
+	"dependencies": {
+		"@astrojs/starlight": "^0.42.0",
+		"astro": "^7.3.1",
+		"sharp": "^0.35.3",
+		"starlight-theme-large-print": "^0.1.0",
+		"starlight-theme-large-print-font-noto-serif-sc": "^0.1.0"
+	},
+	"devDependencies": {
+		"wrangler": "^4.138.0"
+	}
+}
