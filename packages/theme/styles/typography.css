@@ -4,9 +4,10 @@
  * and per-reader via the FontSizeControl component (sets `--lp-user-size`).
  */
 
-/* Serif reading body with CJK-aware fallback stack. */
-.sl-markdown-content {
-	font-family:
+:root {
+	/* Serif reading stack with CJK-aware fallbacks; the optional font packs
+	   register 'Noto Serif SC' / 'Noto Serif TC' at the front. */
+	--lp-serif-stack:
 		'Noto Serif SC',
 		'Noto Serif TC',
 		'Songti SC',
@@ -14,6 +15,11 @@
 		'SimSun',
 		'Noto Serif CJK SC',
 		serif;
+}
+
+/* Serif reading body. */
+.sl-markdown-content {
+	font-family: var(--lp-serif-stack);
 	font-size: var(--lp-user-size, var(--lp-base-size, 17px));
 	line-height: var(--lp-line-height, 1.85);
 }
@@ -27,6 +33,13 @@
 .sl-markdown-content :is(h1, h2, h3, h4, h5, h6) {
 	font-family: inherit;
 	line-height: 1.4;
+}
+
+/* The page title lives outside .sl-markdown-content; style it serif too.
+   Excludes hero titles on splash pages (they carry data-page-title and may
+   have their own display font). */
+#_top:not([data-page-title]) {
+	font-family: var(--lp-serif-stack);
 }
 
 /* Code and preformatted text keep the monospace UI font and a readable size. */
