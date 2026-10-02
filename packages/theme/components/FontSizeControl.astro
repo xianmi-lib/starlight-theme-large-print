@@ -3,6 +3,8 @@
  * FontSizeControl — reader font-size switcher (A− / reset / A+).
  * Five steps around the theme base size; the choice is persisted in
  * localStorage and applied through `--lp-user-size` on <html>.
+ * The active step is also exposed as `data-lp-step` (0–4) on <html> so
+ * typography.css can scale line height with the chosen size.
  * A theme-injected inline script re-applies the saved value before first paint.
  *
  * Usage: place inside a Header override, e.g. next to <ThemeSelect />.
@@ -28,6 +30,7 @@
 
 	function apply(step: number, persist = true) {
 		const clamped = Math.max(0, Math.min(LP_STEPS.length - 1, step))
+		document.documentElement.setAttribute('data-lp-step', String(clamped))
 		if (clamped === LP_DEFAULT) {
 			document.documentElement.style.removeProperty('--lp-user-size')
 			if (persist) localStorage.removeItem(LP_KEY)

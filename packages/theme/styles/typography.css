@@ -24,8 +24,20 @@
 .sl-markdown-content {
 	font-family: var(--lp-serif-stack);
 	font-size: var(--lp-user-size, var(--lp-base-size, 17px));
-	line-height: var(--lp-line-height, 1.85);
+	line-height: var(--lp-line-height, 2);
 }
+
+/* Step-scaled line height: smaller font sizes get looser leading.
+   FontSizeControl sets `data-lp-step` (0=14px … 4=22px) on <html>; the
+   default step (2 = 17px) intentionally matches the plugin's `lineHeight`
+   option so first paint (before JS) and reset render identically.
+   These selectors out-specificity the plugin's `:root` variable injection,
+   so no cascade-order conflict with dev's async Vite style injection. */
+html[data-lp-step='0'] { --lp-line-height: 2.15; }
+html[data-lp-step='1'] { --lp-line-height: 2.05; }
+html[data-lp-step='2'] { --lp-line-height: 2; }
+html[data-lp-step='3'] { --lp-line-height: 1.9; }
+html[data-lp-step='4'] { --lp-line-height: 1.8; }
 
 /* Slightly looser paragraph rhythm for long-form reading. */
 .sl-markdown-content > p + p {

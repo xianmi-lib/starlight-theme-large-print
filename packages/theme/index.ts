@@ -19,8 +19,11 @@ export interface LargePrintConfig {
 	 */
 	baseFontSize?: string
 	/**
-	 * Body line height for page content.
-	 * @default 1.85
+	 * Body line height for page content at the default font-size step (17px).
+	 * When the FontSizeControl component is used, line height scales with the
+	 * reader's font-size step (smaller size → looser leading):
+	 * 14px→2.15 / 15.5px→2.05 / 17px→this value / 19px→1.90 / 22px→1.80.
+	 * @default 2
 	 */
 	lineHeight?: number
 	/**
@@ -36,7 +39,7 @@ const FONT_PACKAGES: Record<string, { css: string; family: string }> = {
 }
 
 export default function starlightThemeLargePrint(userConfig: LargePrintConfig = {}): StarlightPlugin {
-	const { font = false, baseFontSize = '17px', lineHeight = 1.85, warmDark = true } = userConfig
+	const { font = false, baseFontSize = '17px', lineHeight = 2, warmDark = true } = userConfig
 
 	return {
 		name: 'starlight-theme-large-print',
@@ -82,9 +85,11 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 							content: `:root{--lp-base-size:${baseFontSize};--lp-line-height:${lineHeight};}${warmDarkCss}${packFamilyCss}`,
 						},
 						{
+							// 预绘制内联脚本：首屏内联必须静态，字号列表在此硬编码。
+							// ⚠️ 此列表与 FontSizeControl.astro 的 LP_STEPS 必须同步修改（改档位时两处一起改）。
 							tag: 'script',
 							content:
-								"try{var s=localStorage.getItem('lp-font-size');if(s)document.documentElement.style.setProperty('--lp-user-size',s)}catch(e){}",
+								"try{var s=localStorage.getItem('lp-font-size');if(s){var i=['14px','15.5px','17px','19px','22px'].indexOf(s);if(i>-1){var d=document.documentElement;d.style.setProperty('--lp-user-size',s);d.setAttribute('data-lp-step',String(i))}}}catch(e){}",
 						},
 					],
 				})

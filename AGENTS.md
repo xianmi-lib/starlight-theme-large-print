@@ -18,6 +18,8 @@
 
 ## 已踩过的坑
 
+- **行距档位梯度（0.2.0 起）**：FontSizeControl 在 `<html>` 上设 `data-lp-step`（0–4），typography.css 用 `html[data-lp-step=N]` 选择器按档设 `--lp-line-height`（14px→2.15 / 15.5px→2.05 / 17px→2 / 19px→1.9 / 22px→1.8）。该选择器优先级高于插件 head 注入的 `:root` 变量，不受 dev 异步 Vite 样式排序影响（避开了下方第 3 条的坑）。**插件默认档（17px）lineHeight 默认值就是 2**——首访无 JS/reset 归零都走注入值，与 `data-lp-step=2` 渲染一致；预绘制内联脚本恢复 localStorage 时必须连同 `data-lp-step` 一起恢复，否则非默认档读者首屏行距闪跳。
+
 - **本地同名字体遮蔽 webfont**：字体栈里族名顺序敏感——若 SC 排在 TC 前，装有本地 Noto Serif SC 的机器上繁体页会用本地 SC 渲染而 TC webfont 永不加载。插件用 `--lp-serif-pack` 注入把启用的族名置顶，typography.css 的 fallback 栈里**不要**写 Noto 族名。
 - **插件解析字体包路径**：字体包是*站点*的依赖，必须 `createRequire(process.cwd())` 从项目根解析，不能用 `import.meta.resolve`（从主题包位置向上找不到）。
 - **file: 依赖的 dev 调试**：本站群通过 `file:../starlight-theme-large-print/...` 引用，消费工程需在 `vite.server.fs.allow` 放行主题所在父目录（仅 dev 需要）。
