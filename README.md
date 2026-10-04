@@ -55,6 +55,16 @@ import FontSizeControl from 'starlight-theme-large-print/components/FontSizeCont
 <FontSizeControl />
 ```
 
+A dropdown variant, `FontSizeSelect`, is also available (0.3.0+). Same five steps and the same persistence mechanism, so reader preferences carry over between the two; step labels are props for localization:
+
+```astro
+---
+import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelect.astro';
+---
+
+<FontSizeSelect labels={['小', '稍小', '标准', '大', '特大']} ariaLabel="字号" />
+```
+
 ## Options
 
 | Option | Type | Default | Description |

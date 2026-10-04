@@ -1,0 +1,146 @@
+---
+/*
+ * FontSizeSelect — dropdown variant of the reader font-size switcher.
+ * Same five steps as FontSizeControl (14 / 15.5 / 17 / 19 / 22px, default 17px)
+ * and the SAME persistence mechanism (localStorage key `lp-font-size`,
+ * `--lp-user-size` and `data-lp-step` on <html>), so preferences made with
+ * either component carry over seamlessly. The theme-injected inline script
+ * re-applies the saved value before first paint for both.
+ *
+ * Coexists with FontSizeControl on the same page: both read/write
+ * `data-lp-step`, and this component syncs its display through a
+ * MutationObserver on that attribute.
+ *
+ * No-JS: renders a native <select> (keyboard reachable, current step shown);
+ * applying a step requires JS, same degradation level as Starlight's own
+ * ThemeSelect/LanguageSelect.
+ *
+ * Usage: place inside a Header/sidebar override, e.g. next to <ThemeSelect />.
+ * Pass `labels`/`ariaLabel` to localize (e.g. Traditional Chinese).
+ */
+
+interface Props {
+	/** Step labels, smallest → largest (5 entries). */
+	labels?: [string, string, string, string, string];
+	/** Accessible name of the control. */
+	ariaLabel?: string;
+}
+
+const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字号' } = Astro.props;
+---
+
+<lp-font-size-select class="lp-font-size-select">
+	<label>
+		<span class="sr-only">{ariaLabel}</span>
+		<span class="label-icon" aria-hidden="true">A</span>
+		<select autocomplete="off" aria-label={ariaLabel}>
+			{labels.map((label, i) => <option value={i} selected={i === 2}>{label}</option>)}
+		</select>
+		<svg class="caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+			<path d="m7 10 5 5 5-5z"></path>
+		</svg>
+	</label>
+</lp-font-size-select>
+
+<script>
+	// ⚠️ 与 FontSizeControl.astro 的同款逻辑保持同步修改（LP_KEY / LP_STEPS / apply）。
+	const LP_KEY = 'lp-font-size';
+	const LP_STEPS = ['14px', '15.5px', '17px', '19px', '22px'];
+	const LP_DEFAULT = 2;
+
+	function currentStep(): number {
+		const attr = document.documentElement.getAttribute('data-lp-step');
+		const n = attr === null ? LP_DEFAULT : Number.parseInt(attr, 10);
+		return Number.isFinite(n) ? Math.max(0, Math.min(LP_STEPS.length - 1, n)) : LP_DEFAULT;
+	}
+
+	function apply(step: number) {
+		const clamped = Math.max(0, Math.min(LP_STEPS.length - 1, step));
+		document.documentElement.setAttribute('data-lp-step', String(clamped));
+		if (clamped === LP_DEFAULT) {
+			document.documentElement.style.removeProperty('--lp-user-size');
+			localStorage.removeItem(LP_KEY);
+		} else {
+			document.documentElement.style.setProperty('--lp-user-size', LP_STEPS[clamped]!);
+			localStorage.setItem(LP_KEY, LP_STEPS[clamped]!);
+		}
+	}
+
+	const roots = document.querySelectorAll('lp-font-size-select');
+	for (const root of roots) {
+		const select = root.querySelector('select')!;
+		select.value = String(currentStep());
+		select.addEventListener('change', () => apply(Number.parseInt(select.value, 10)));
+	}
+
+	// 与 FontSizeControl（或页面上其他写 data-lp-step 的控件）并存时同步显示值。
+	new MutationObserver(() => {
+		const step = String(currentStep());
+		for (const root of roots) {
+			const select = root.querySelector('select')!;
+			if (select.value !== step) select.value = step;
+		}
+	}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lp-step'] });
+</script>
+
+<style>
+	@layer starlight.core {
+		.lp-font-size-select label {
+			--sl-label-icon-size: 0.875rem;
+			--sl-caret-size: 1.25rem;
+			--sl-inline-padding: 0.5rem;
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+			color: var(--sl-color-gray-2);
+		}
+
+		.lp-font-size-select label:hover {
+			color: var(--sl-color-white);
+		}
+
+		.label-icon,
+		.caret {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+		}
+
+		.label-icon {
+			inset-inline-start: 0;
+			font-size: var(--sl-label-icon-size);
+			font-weight: 600;
+			line-height: 1;
+		}
+
+		.caret {
+			inset-inline-end: 0;
+			font-size: var(--sl-caret-size);
+		}
+
+		.lp-font-size-select select {
+			border: 0;
+			padding-block: 0.625rem;
+			padding-inline: calc(var(--sl-label-icon-size) + var(--sl-inline-padding) + 0.25rem)
+				calc(var(--sl-caret-size) + var(--sl-inline-padding) + 0.25rem);
+			margin-inline: calc(var(--sl-inline-padding) * -1);
+			background-color: transparent;
+			color: inherit;
+			cursor: pointer;
+			appearance: none;
+		}
+
+		.lp-font-size-select option {
+			background-color: var(--sl-color-bg-nav);
+			color: var(--sl-color-gray-1);
+		}
+
+		@media (min-width: 50rem) {
+			.lp-font-size-select select {
+				font-size: var(--sl-text-sm);
+			}
+		}
+	}
+</style>

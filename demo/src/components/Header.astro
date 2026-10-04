@@ -1,5 +1,6 @@
 ---
-// Default Starlight header plus the theme's FontSizeControl next to ThemeSelect.
+// Default Starlight header plus the theme's FontSizeControl and FontSizeSelect
+// (both, on purpose — the demo doubles as the coexistence test bed).
 import config from 'virtual:starlight/user-config';
 
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
@@ -8,6 +9,7 @@ import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
 import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
 import FontSizeControl from 'starlight-theme-large-print/components/FontSizeControl.astro';
+import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelect.astro';
 
 const shouldRenderSearch =
 	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
@@ -25,6 +27,7 @@ const shouldRenderSearch =
 			<SocialIcons />
 		</div>
 		<FontSizeControl />
+		<FontSizeSelect />
 		<ThemeSelect />
 		<LanguageSelect />
 	</div>

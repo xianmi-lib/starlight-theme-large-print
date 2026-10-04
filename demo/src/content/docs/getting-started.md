@@ -47,6 +47,20 @@ import FontSizeControl from 'starlight-theme-large-print/components/FontSizeCont
 <FontSizeControl />
 ```
 
+### Dropdown variant: `FontSizeSelect`
+
+A dropdown (native `<select>`) variant showing the current step by name — same five steps, same persistence, so reader preferences carry over between the two. Step labels and the accessible name are props for localization:
+
+```astro
+---
+import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelect.astro';
+---
+
+<FontSizeSelect labels={['小', '稍小', '标准', '大', '特大']} ariaLabel="字号" />
+```
+
+Both components may coexist on one page (they stay in sync via `data-lp-step`), though sites will typically pick one.
+
 ## Options
 
 | Option | Default | Description |
