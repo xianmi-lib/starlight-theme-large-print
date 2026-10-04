@@ -86,7 +86,7 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 <style>
 	@layer starlight.core {
 		.lp-font-size-select label {
-			--sl-label-icon-size: 0.875rem;
+			--sl-label-icon-size: 1rem;
 			--sl-caret-size: 1.25rem;
 			--sl-inline-padding: 0.5rem;
 			position: relative;
@@ -96,8 +96,9 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 			color: var(--sl-color-gray-2);
 		}
 
-		.lp-font-size-select label:hover {
-			color: var(--sl-color-white);
+		/* 与 Starlight/rapide 头部控件同族：hover/focus 变 accent 色而非纯白 */
+		.lp-font-size-select label:is(:hover, :focus-within) {
+			color: var(--sl-color-accent-high);
 		}
 
 		.label-icon,
@@ -110,8 +111,9 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 
 		.label-icon {
 			inset-inline-start: 0;
+			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重） */
 			font-size: var(--sl-label-icon-size);
-			font-weight: 600;
+			font-weight: 400;
 			line-height: 1;
 		}
 
