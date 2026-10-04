@@ -15,6 +15,10 @@
  * applying a step requires JS, same degradation level as Starlight's own
  * ThemeSelect/LanguageSelect.
  *
+ * The trigger's "A" icon scales with the active step (14–22px, Safari-reader
+ * style); JS keeps it in sync on init, step change and external writes to
+ * `data-lp-step`. Without JS it stays at the 1rem fallback.
+ *
  * Usage: place inside a Header/sidebar override, e.g. next to <ThemeSelect />.
  * Pass `labels`/`ariaLabel` to localize (e.g. Traditional Chinese).
  */
@@ -67,19 +71,26 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 	}
 
 	const roots = document.querySelectorAll('lp-font-size-select');
+
+	// 同步显示值 + 触发器 A 图标字号（图标随档位缩放，取档位 px 值本身；
+	// 图标绝对定位于定高容器内，select 宽度由文本决定，触发器盒不随档变形）。
+	function syncRoot(root: Element, step: number) {
+		const select = root.querySelector('select')!;
+		const value = String(step);
+		if (select.value !== value) select.value = value;
+		(root as HTMLElement).style.setProperty('--lp-icon-size', LP_STEPS[step]!);
+	}
+
 	for (const root of roots) {
 		const select = root.querySelector('select')!;
-		select.value = String(currentStep());
+		syncRoot(root, currentStep());
 		select.addEventListener('change', () => apply(Number.parseInt(select.value, 10)));
 	}
 
 	// 与 FontSizeControl（或页面上其他写 data-lp-step 的控件）并存时同步显示值。
 	new MutationObserver(() => {
-		const step = String(currentStep());
-		for (const root of roots) {
-			const select = root.querySelector('select')!;
-			if (select.value !== step) select.value = step;
-		}
+		const step = currentStep();
+		for (const root of roots) syncRoot(root, step);
 	}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lp-step'] });
 </script>
 
@@ -111,8 +122,10 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 
 		.label-icon {
 			inset-inline-start: 0;
-			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重） */
-			font-size: var(--sl-label-icon-size);
+			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重）。
+			   字号随档位缩放（--lp-icon-size 由组件脚本按 data-lp-step 设置，
+			   取档位 px 值本身 14–22px）；无 JS/脚本未跑时回退 1rem。 */
+			font-size: var(--lp-icon-size, var(--sl-label-icon-size));
 			font-weight: 400;
 			line-height: 1;
 		}
