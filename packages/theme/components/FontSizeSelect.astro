@@ -32,11 +32,11 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 <lp-font-size-select class="lp-font-size-select">
 	<label>
 		<span class="sr-only">{ariaLabel}</span>
-		<span class="label-icon" aria-hidden="true">A</span>
+		<span class="icon label-icon" aria-hidden="true">A</span>
 		<select autocomplete="off" aria-label={ariaLabel}>
 			{labels.map((label, i) => <option value={i} selected={i === 2}>{label}</option>)}
 		</select>
-		<svg class="caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+		<svg class="icon caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 			<path d="m7 10 5 5 5-5z"></path>
 		</svg>
 	</label>
