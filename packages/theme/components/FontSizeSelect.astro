@@ -15,9 +15,9 @@
  * applying a step requires JS, same degradation level as Starlight's own
  * ThemeSelect/LanguageSelect.
  *
- * The trigger's "A" icon scales with the active step (14–22px, Safari-reader
- * style); JS keeps it in sync on init, step change and external writes to
- * `data-lp-step`. Without JS it stays at the 1rem fallback.
+ * The trigger icon slot shows a five-state text marker for the active step
+ * (A−− / A− / A / A+ / A++, minus is U+2212); JS keeps it in sync on init,
+ * step change and external writes to `data-lp-step`. Without JS it stays "A".
  *
  * Usage: place inside a Header/sidebar override, e.g. next to <ThemeSelect />.
  * Pass `labels`/`ariaLabel` to localize (e.g. Traditional Chinese).
@@ -72,13 +72,15 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 
 	const roots = document.querySelectorAll('lp-font-size-select');
 
-	// 同步显示值 + 触发器 A 图标字号（图标随档位缩放，取档位 px 值本身；
-	// 图标绝对定位于定高容器内，select 宽度由文本决定，触发器盒不随档变形）。
+	// 触发器图标位的五态文本（A−− / A− / A / A+ / A++；减号用 U+2212 视觉更匀）。
+	// 同步显示值 + 图标文本；图标绝对定位于定高容器内，select 宽度 intrinsic，
+	// 触发器盒随档位文本变宽属预期（不挤压邻居，由消费端 Header 的节奏保证）。
+	const LP_ICONS = ['A−−', 'A−', 'A', 'A+', 'A++'];
 	function syncRoot(root: Element, step: number) {
 		const select = root.querySelector('select')!;
 		const value = String(step);
 		if (select.value !== value) select.value = value;
-		(root as HTMLElement).style.setProperty('--lp-icon-size', LP_STEPS[step]!);
+		root.querySelector('.label-icon')!.textContent = LP_ICONS[step]!;
 	}
 
 	for (const root of roots) {
@@ -122,10 +124,9 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 
 		.label-icon {
 			inset-inline-start: 0;
-			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重）。
-			   字号随档位缩放（--lp-icon-size 由组件脚本按 data-lp-step 设置，
-			   取档位 px 值本身 14–22px）；无 JS/脚本未跑时回退 1rem。 */
-			font-size: var(--lp-icon-size, var(--sl-label-icon-size));
+			/* 纯文字作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重）。
+			   文本由组件脚本按档位写入（A−−/A−/A/A+/A++）；无 JS 时保持标记里的 "A"。 */
+			font-size: var(--sl-label-icon-size);
 			font-weight: 400;
 			line-height: 1;
 		}
@@ -138,7 +139,9 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 		.lp-font-size-select select {
 			border: 0;
 			padding-block: 0.625rem;
-			padding-inline: calc(var(--sl-label-icon-size) + var(--sl-inline-padding) + 0.25rem)
+			/* 左侧槽位按最宽图标文本（A−−/A++，1rem 字重 400 实测约 38px≈2.375rem）
+			   预留 2.5rem，避免宽档位图标压到选项文字（2026-10 迭代 8 实测修复） */
+			padding-inline: calc(2.5rem + var(--sl-inline-padding))
 				calc(var(--sl-caret-size) + var(--sl-inline-padding) + 0.25rem);
 			margin-inline: calc(var(--sl-inline-padding) * -1);
 			background-color: transparent;
