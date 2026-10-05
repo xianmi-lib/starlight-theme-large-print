@@ -11,7 +11,7 @@ export default defineConfig({
 			title: 'Large Print',
 			description: 'Elder-friendly reading theme for Astro Starlight: large serif type, reader font-size control, warm dark mode, optional self-hosted CJK webfonts.',
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/xianmi-library/starlight-theme-large-print' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/xianmi-lib/starlight-theme-large-print' },
 			],
 			components: {
 				Header: './src/components/Header.astro',
