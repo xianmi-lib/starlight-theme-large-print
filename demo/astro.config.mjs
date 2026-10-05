@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import starlightThemeLargePrint from 'starlight-theme-large-print';
 
 // https://astro.build/config
+// Deploys run on Cloudflare Workers Builds (push to main, watch demo/ + packages/theme/).
 export default defineConfig({
 	site: 'https://www.xianmi.co',
 	base: '/starlight',
