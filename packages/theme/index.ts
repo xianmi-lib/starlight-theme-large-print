@@ -4,14 +4,21 @@ import type { StarlightPlugin } from '@astrojs/starlight/types'
 
 export interface LargePrintConfig {
 	/**
-	 * Self-hosted CJK serif font pack to enable.
+	 * Self-hosted CJK serif font pack(s) to enable.
 	 * Requires the matching optional package:
 	 * - `'noto-serif-sc'` → `starlight-theme-large-print-font-noto-serif-sc`
 	 * - `'noto-serif-tc'` → `starlight-theme-large-print-font-noto-serif-tc`
 	 * - `false` → no web font, the serif system font stack is used.
+	 *
+	 * Map form (for i18n sites): keys are Starlight locale keys (`root`,
+	 * `zh-cn`, `zh-tw`, …), values are packs. Each non-root locale gets its
+	 * pack scoped via `:root:lang(<locale lang>)`; the `root` entry (if any)
+	 * sets the site-wide default, exactly like the string form.
+	 * @example font: 'noto-serif-sc'
+	 * @example font: { 'zh-cn': 'noto-serif-sc', 'zh-tw': 'noto-serif-tc' }
 	 * @default false
 	 */
-	font?: 'noto-serif-sc' | 'noto-serif-tc' | false
+	font?: 'noto-serif-sc' | 'noto-serif-tc' | false | Record<string, 'noto-serif-sc' | 'noto-serif-tc'>
 	/**
 	 * Base body font size applied to page content.
 	 * Readers can override it with the FontSizeControl component.
@@ -47,11 +54,22 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 			'config:setup'({ config, logger, updateConfig }) {
 				const customCss = [...(config.customCss ?? []), 'starlight-theme-large-print/styles/typography.css']
 
-				if (font) {
-					const pack = FONT_PACKAGES[font]!
-					// The font pack is a dependency of the *site*, so resolve from the
-					// project root, not from this plugin's own location.
-					const projectRequire = createRequire(`${process.cwd()}/`)
+				// Normalize the font option to a locale→pack map. The string form
+				// is shorthand for `{ root: <pack> }` (site-wide, legacy behavior).
+				const fontMap: Record<string, 'noto-serif-sc' | 'noto-serif-tc'> =
+					typeof font === 'string' ? { root: font } : (font ?? {})
+
+				// The font packs are dependencies of the *site*, so resolve from the
+				// project root, not from this plugin's own location.
+				const projectRequire = createRequire(`${process.cwd()}/`)
+				const loadedPacks = new Set<string>()
+				const familyRules: string[] = []
+				for (const [locale, packName] of Object.entries(fontMap)) {
+					const pack = FONT_PACKAGES[packName]
+					if (!pack) {
+						logger.warn(`Unknown font "${packName}" (locale "${locale}") — expected one of ${Object.keys(FONT_PACKAGES).join(', ')}. Skipped.`)
+						continue
+					}
 					let resolved = false
 					try {
 						projectRequire.resolve(pack.css)
@@ -59,13 +77,26 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 					} catch {
 						resolved = false
 					}
-					if (resolved) {
-						customCss.push(pack.css)
-					} else {
+					if (!resolved) {
 						logger.warn(
-							`Font "${font}" requires the optional package "${pack.css.split('/')[0]}". ` +
-								`Install it or set \`font: false\`. Falling back to the system serif stack.`
+							`Font "${packName}" requires the optional package "${pack.css.split('/')[0]}". ` +
+								`Install it or remove it from \`font\`. Falling back to the system serif stack.`
 						)
+						continue
+					}
+					if (!loadedPacks.has(packName)) {
+						customCss.push(pack.css)
+						loadedPacks.add(packName)
+					}
+					// Prepend the pack's family to the serif stack (see typography.css).
+					// The root entry applies site-wide; other locales are scoped by
+					// the <html lang> attribute Starlight renders for each locale.
+					if (locale === 'root') {
+						familyRules.push(`:root{--lp-serif-pack:'${pack.family}',;}`)
+					} else {
+						const localeConfig = (config.locales as Record<string, { lang?: string }> | undefined)?.[locale]
+						const lang = localeConfig?.lang ?? locale
+						familyRules.push(`:root:lang(${lang}){--lp-serif-pack:'${pack.family}',;}`)
 					}
 				}
 
@@ -73,8 +104,7 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 					? ":root[data-theme='dark']{--sl-color-black:oklch(16% 0.012 60);--sl-color-gray-6:oklch(21% 0.014 60);--sl-color-gray-5:oklch(26% 0.015 60);}"
 					: ''
 
-				// Prepend the enabled pack's family to the serif stack (see typography.css).
-				const packFamilyCss = font ? `:root{--lp-serif-pack:'${FONT_PACKAGES[font]!.family}',;}` : ''
+				const packFamilyCss = familyRules.join('')
 
 				updateConfig({
 					customCss,

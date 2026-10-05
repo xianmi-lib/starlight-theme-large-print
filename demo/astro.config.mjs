@@ -12,6 +12,12 @@ export default defineConfig({
 		starlight({
 			title: 'Large Print',
 			description: 'Elder-friendly reading theme for Astro Starlight: large serif type, reader font-size control, warm dark mode, optional self-hosted CJK webfonts.',
+			// 英文为默认语言（不翻译）；中文繁/简各演示一页字体包效果。
+			locales: {
+				root: { label: 'English', lang: 'en' },
+				'zh-cn': { label: '简体中文', lang: 'zh-CN' },
+				'zh-tw': { label: '繁體中文', lang: 'zh-TW' },
+			},
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/xianmi-lib/starlight-theme-large-print' },
 			],
@@ -23,7 +29,7 @@ export default defineConfig({
 				{ label: 'Typography', slug: 'typography' },
 				{ label: '中文排版', slug: 'cjk' },
 			],
-			plugins: [starlightThemeLargePrint({ font: 'noto-serif-sc' })],
+			plugins: [starlightThemeLargePrint({ font: { 'zh-cn': 'noto-serif-sc', 'zh-tw': 'noto-serif-tc' } })],
 		}),
 	],
 });

@@ -61,11 +61,23 @@ import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelec
 
 Both components may coexist on one page (they stay in sync via `data-lp-step`), though sites will typically pick one.
 
+### Per-locale fonts (i18n sites)
+
+`font` also accepts a map keyed by Starlight locale: each locale's pages get their own pack, scoped via the `<html lang>` attribute. The `root` entry (if present) sets the site-wide default, exactly like the string form. This demo site uses it to serve SC on Simplified pages and TC on Traditional pages:
+
+```js
+starlightThemeLargePrint({
+  font: { 'zh-cn': 'noto-serif-sc', 'zh-tw': 'noto-serif-tc' },
+}),
+```
+
+Install every pack you reference; pages in locales without an entry fall back to the system serif stack.
+
 ## Options
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `font` | `false` | `'noto-serif-sc'` \| `'noto-serif-tc'` \| `false`. Requires the matching font package. |
+| `font` | `false` | `'noto-serif-sc'` \| `'noto-serif-tc'` \| `false` \| locale→pack map. Requires the matching font package(s). |
 | `baseFontSize` | `'17px'` | Base body font size; readers can override it with the font-size control. |
 | `lineHeight` | `1.85` | Body line height. |
 | `warmDark` | `true` | Warm paper-tone dark mode background. |
