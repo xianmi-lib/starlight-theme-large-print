@@ -2,7 +2,7 @@
 
 An elder-friendly reading theme for [Astro Starlight](https://starlight.astro.build/): larger serif body text, a reader font-size control, warm dark mode, and optional self-hosted CJK serif webfonts — built for long-form reading sites with older audiences.
 
-**[Live demo](https://starlight.xianmi.co/)** · Born from [显密文库 xianmi.co](https://www.xianmi.co/), a 120k-page Buddhist digital library serving mainly elderly readers of classical Chinese texts.
+**[Live demo](https://www.xianmi.co/starlight/)** · Born from [显密文库 xianmi.co](https://www.xianmi.co/), a 120k-page Buddhist digital library serving mainly elderly readers of classical Chinese texts.
 
 ## Features
 

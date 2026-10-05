@@ -5,7 +5,8 @@ import starlightThemeLargePrint from 'starlight-theme-large-print';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://starlight.xianmi.co',
+	site: 'https://www.xianmi.co',
+	base: '/starlight',
 	integrations: [
 		starlight({
 			title: 'Large Print',

@@ -5,8 +5,9 @@
 	"assets": {
 		"directory": "./dist"
 	},
-	"routes": [
-		{ "pattern": "starlight.xianmi.co", "custom_domain": true }
-	],
+	// 生产路由（挂接归 publish，activate 前保持注释）：
+	// "routes": [
+	// 	{ "pattern": "www.xianmi.co/starlight/*", "zone_name": "xianmi.co" }
+	// ],
 	"workers_dev": true
 }
