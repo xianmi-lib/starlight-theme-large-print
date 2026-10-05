@@ -1,0 +1,36 @@
+---
+title: Large Print
+description: 适老阅读的 Astro Starlight 主题。
+template: splash
+hero:
+  tagline: 大号衬线正文、读者字号调节、暖色暗色模式、可选的自托管中文字体包——为以年长读者为主的长文阅读站点而生。
+  actions:
+    # hero action 链接不会自动补 base 与语言前缀（Starlight 惯例坑），此处写死全路径
+    - text: 快速上手
+      link: /starlight/zh-cn/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: 在 GitHub 查看
+      link: https://github.com/xianmi-lib/starlight-theme-large-print
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## 主题特色
+
+<CardGrid stagger>
+	<Card title="大号衬线正文" icon="pencil">
+		默认 17px 正文、1.85 倍行高，配舒适的衬线字体——长时间阅读也不累眼。
+	</Card>
+	<Card title="读者字号调节" icon="setting">
+		页首的字号下拉菜单提供五档字号（14–22px），选择会被记住。现在就到页首试试。
+	</Card>
+	<Card title="暖色暗色模式" icon="moon">
+		暗色主题采用纸张般的暖棕色，而非冷调蓝黑。切换主题图标，亲手感受差异。
+	</Card>
+	<Card title="自托管中文字体" icon="translate">
+		可选 Noto Serif 简/繁字体包，从你自己的站点经 `unicode-range` 分包加载——访客只下载当前页面需要的部分。见<a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/zh-cn/cjk/`}>中文排版</a>。
+	</Card>
+</CardGrid>

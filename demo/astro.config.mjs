@@ -25,8 +25,8 @@ export default defineConfig({
 				Header: './src/components/Header.astro',
 			},
 			sidebar: [
-				{ label: 'Getting Started', slug: 'getting-started' },
-				{ label: 'Typography', slug: 'typography' },
+				{ label: 'Getting Started', slug: 'getting-started', translations: { 'zh-CN': '快速上手', 'zh-TW': '快速上手' } },
+				{ label: 'Typography', slug: 'typography', translations: { 'zh-CN': '排版风格', 'zh-TW': '排版風格' } },
 				{ label: '中文排版', slug: 'cjk' },
 			],
 			plugins: [starlightThemeLargePrint({ font: { 'zh-cn': 'noto-serif-sc', 'zh-tw': 'noto-serif-tc' } })],
