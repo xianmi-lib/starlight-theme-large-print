@@ -5,9 +5,11 @@
 	"assets": {
 		"directory": "./dist"
 	},
-	// 生产路由（挂接归 publish，activate 前保持注释）：
-	// "routes": [
-	// 	{ "pattern": "www.xianmi.co/starlight/*", "zone_name": "xianmi.co" }
-	// ],
+	// 生产路由（2026-10-05 由 publish 挂接）：星号形态同时覆盖 /starlight 与 /starlight/*；
+	// 「更具体者优先」压过 cn worker 的 xianmi.co/* 与 www.xianmi.co/*，与 tw 挂 /zh-tw/* 同机制
+	"routes": [
+		{ "pattern": "www.xianmi.co/starlight*", "zone_name": "xianmi.co" },
+		{ "pattern": "xianmi.co/starlight*", "zone_name": "xianmi.co" }
+	],
 	"workers_dev": true
 }
