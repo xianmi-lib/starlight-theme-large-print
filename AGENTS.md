@@ -30,6 +30,15 @@
 
 Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/style/` 的 `props.css`（变量名）与 `markdown.css`（`.sl-markdown-content` 选择器写法）——主题的扩展点都在这两个文件里。GitHub main 仅作超前参考，以钉住版本的本地产物为准。
 
+## demo 部署（CF Workers Builds 自动构建，2026-10-05 起生效）
+
+- **唯一部署通道**：push 到 `main` 且触及 `demo/` 或 `packages/theme/`（watch paths）即触发 CF 云端构建+部署。**本地 `npm run deploy` 已退役，禁止本地/CF 双轨部署**（产物 scoped-style hash 随环境不同，双轨会造成资产频繁翻滚）。
+- 配置：root directory=`demo`、build command=`npm run build`、deploy command=`npx wrangler deploy`、branch=`main`、previews 关。路由（`www.xianmi.co/starlight*` 等）在 `demo/wrangler.jsonc`，云端 deploy 只更新资产不动路由。
+- 凭证：build token 由 dashboard Builds 向导自动铸（名 `starlight-theme-large-print build token`，UUID `1d0f8a41-7fba-49bc-b7c7-a04730501da5`，底层 CF token ID `ba8246f319c3c3a9653c8c869510412b`；**token 值不落任何文件**）。轮换：dashboard 重铸或 CLI `cf builds tokens create` 登记后 `cf builds workers update <tag> --production-settings-build-token-uuid` + `cf builds triggers update <trigger-uuid> --build-token-uuid` 换绑（trigger UUID `15e523a5-9567-4382-aff5-076500bb03e5`）。
+- 手动重触（免 push）：`cf builds create` 当前会 12002（CLI 缺陷），用 deploy hook 代替——`cf builds deploy-hooks trigger e87c9f7e-babd-48bb-bc30-45f826ecd4b0`（名 `manual-retrigger`，branch=main）。
+- 构建环境实证（2026-10-05）：node 24.18 / npm 10.9.2，`npm clean-install` 走 lockfile；npm allow-scripts 会拦 esbuild/workerd 的 postinstall 但 optionalDependencies 平台二进制可用，不影响构建；构建全程约 26 秒（含部署）。
+- 旧坑备查：曾用 `goodweb build token`（d7c99bf6）时构建卡在 initializing 阶段 `unable to verify Worker` → terminated——即 token 无效时构建连 build command 都到不了，排障先看 build token 绑定。
+
 ## 发布流程（待首次执行）
 
 1. 三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc；字体包内容稳定，几乎不用发新版）。
