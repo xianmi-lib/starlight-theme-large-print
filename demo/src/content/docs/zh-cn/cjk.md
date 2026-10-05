@@ -28,4 +28,4 @@ description: Self-hosted CJK webfonts with unicode-range subsets.
 
 ## 字号随心
 
-页首右侧的 **A− A A+** 提供五档字号（14–22px），选择会记住。年长的读者可以一键放大，不必眯眼。
+页首右侧的**字号下拉菜单**提供五档字号（14–22px），选择会记住。年长的读者可以轻松放大，不必眯眼。
