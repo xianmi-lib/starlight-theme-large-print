@@ -85,9 +85,10 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 				aria-label={labels.size}
 			/>
 			<div class="lp-ticks" aria-hidden="true">
-				{labels.sizeSteps.map((t, i) => <span data-lp-tick={i}>{t}<br />{sizeTicks[i]}</span>)}
+				{labels.sizeSteps.map((t, i) => <span data-lp-size-tick={i}>{t}<br />{sizeTicks[i]}</span>)}
 			</div>
 		</div>
+		<hr class="lp-divider" />
 		<div class="lp-field">
 			<div class="lp-field-head">
 				<span class="lp-field-label">{labels.spacing}</span>
@@ -102,13 +103,15 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 				aria-label={labels.spacing}
 			/>
 			<div class="lp-ticks" aria-hidden="true">
-				{labels.spacingSteps.map((t, i) => <span data-lp-tick={i}>{t}</span>)}
+				{labels.spacingSteps.map((t, i) => <span data-lp-spacing-tick={i}>{t}</span>)}
 			</div>
 		</div>
+		<hr class="lp-divider" />
 		<label class="lp-hang-row">
 			<input type="checkbox" data-lp-hang-input />
 			<span>{labels.hang}</span>
 		</label>
+		<hr class="lp-divider" />
 		<label class="lp-hang-row">
 			<input type="checkbox" data-lp-indent-input />
 			<span>{labels.indent}</span>
@@ -198,22 +201,22 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 		const spacingOut = root.querySelector<HTMLOutputElement>('[data-lp-spacing-out]');
 		if (sizeInput) {
 			sizeInput.value = String(step);
-			const tick = root.querySelector(`[data-lp-tick="${step}"]`);
+			const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
 			sizeInput.setAttribute('aria-valuetext', tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!);
 		}
 		if (spacingInput) {
 			spacingInput.value = String(spacing);
-			const tick = root.querySelector(`[data-lp-tick="${spacing}"]`);
+			const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
 			spacingInput.setAttribute('aria-valuetext', tick?.textContent?.trim() ?? '');
 		}
 		if (hangInput) hangInput.checked = currentHang();
 		if (indentInput) indentInput.checked = currentIndent();
 		if (sizeOut) {
-			const tick = root.querySelector(`[data-lp-tick="${step}"]`);
+			const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
 			sizeOut.textContent = tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!;
 		}
 		if (spacingOut) {
-			const tick = root.querySelector(`[data-lp-tick="${spacing}"]`);
+			const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
 			spacingOut.textContent = tick?.textContent?.trim() ?? '';
 		}
 	}
@@ -328,8 +331,12 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 			color: var(--sl-color-gray-1);
 		}
 
-		.lp-field + .lp-field {
-			margin-top: 1rem;
+		/* 控件间分割线（2026-10-07 用户实测反馈）：逐项分隔；线色走 Starlight
+		   调色板 token，深浅模式（含暖棕暗色）自适应。 */
+		.lp-divider {
+			border: 0;
+			border-top: 1px solid var(--sl-color-gray-5);
+			margin: 0.875rem 0;
 		}
 
 		.lp-field-head {
@@ -367,7 +374,6 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 			display: flex;
 			align-items: center;
 			gap: 0.5rem;
-			margin-top: 1rem;
 			font-size: var(--sl-text-sm);
 			cursor: pointer;
 		}
