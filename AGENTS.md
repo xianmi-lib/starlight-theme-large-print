@@ -48,6 +48,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - **0.2.0 / 0.3.0**：仅仓内迭代（行距梯度、FontSizeSelect），**从未发 npm**——npm 上没有中间版本属正常，勿据版本号推断发布史。
   - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
   - **0.4.1**（2026-10-07）：实测反馈修正——字号恢复五档 + 首行缩进第四控件；三包同批补发（registry 与 main 对齐）。
+  - **0.4.2**（2026-10-07）：控件间分割线 + 首行缩进控件注释禁用 + 移动端挤压修复 + 排版触发器 UI 修正（桌面字号对齐 Select、图标化阈值 22rem）四批入库；三包同批补发，registry 与 main 对齐。
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
 - **官方收录（未执行）**：按 [withastro/starlight CONTRIBUTING#themes](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#themes)：StackBlitz demo 装包截图（1280×720 明暗两张）→ PR 加 `themes.mdx` 条目。**前提是包已上 npm**（已满足）。
