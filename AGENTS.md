@@ -41,7 +41,13 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 - 构建环境实证（2026-10-05）：node 24.18 / npm 10.9.2，`npm clean-install` 走 lockfile；npm allow-scripts 会拦 esbuild/workerd 的 postinstall 但 optionalDependencies 平台二进制可用，不影响构建；构建全程约 26 秒（含部署）。
 - 旧坑备查：曾用 `goodweb build token`（d7c99bf6）时构建卡在 initializing 阶段 `unable to verify Worker` → terminated——即 token 无效时构建连 build command 都到不了，排障先看 build token 绑定。
 
-## 发布流程（待首次执行）
+## 发布流程（已执行记录）
 
-1. 三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc；字体包内容稳定，几乎不用发新版）。
-2. 官方收录：按 [withastro/starlight CONTRIBUTING#themes](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#themes)：StackBlitz demo 装包截图（1280×720 明暗两张）→ PR 加 `themes.mdx` 条目。**前提是包已上 npm**。
+- **npm 发布**：三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc 同批对齐版本；字体包内容稳定，仅随主题批次对齐重发）。
+  - **0.1.0**（2026-09-26 前后）：三包首发。
+  - **0.2.0 / 0.3.0**：仅仓内迭代（行距梯度、FontSizeSelect），**从未发 npm**——npm 上没有中间版本属正常，勿据版本号推断发布史。
+  - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
+  - **0.4.1**（2026-10-07）：实测反馈修正——字号恢复五档 + 首行缩进第四控件；三包同批补发（registry 与 main 对齐）。
+  - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
+  - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
+- **官方收录（未执行）**：按 [withastro/starlight CONTRIBUTING#themes](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#themes)：StackBlitz demo 装包截图（1280×720 明暗两张）→ PR 加 `themes.mdx` 条目。**前提是包已上 npm**（已满足）。
