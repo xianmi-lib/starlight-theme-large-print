@@ -1,7 +1,9 @@
 ---
 /*
- * TypographyDropdown — 排版下拉：字号 / 行距 / 标点悬挂 / 首行缩进 四控件
- * （2026-10-07 用户设计；同日实测反馈恢复五档字号并补缩进开关）。
+ * TypographyDropdown — 排版下拉：字号 / 行距 / 标点悬挂 三控件（在用）
+ * （2026-10-07 用户设计；同日实测反馈恢复五档字号。第四控件首行缩进已按
+ * 用户拍板注释禁用——与内容统一议题绑定，存档 docs/indent-paragraph-normalization.md；
+ * CSS/脚本/localStorage 机器保留，解禁=恢复面板 label 行）。
  *
  * 状态机器与 FontSizeControl / FontSizeSelect 完全同套（有意多写，各组件内联打包
  * 无法共享模块——改档位必须几处同步，见 index.ts 预绘制脚本注释）：
@@ -111,11 +113,16 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 			<input type="checkbox" data-lp-hang-input />
 			<span>{labels.hang}</span>
 		</label>
-		<hr class="lp-divider" />
+		{/* 首行缩进控件暂时注释禁用（2026-10-07 用户拍板，与内容统一议题绑定——
+		    议题存档 docs/indent-paragraph-normalization.md，勿展开分析）。
+		    机器全部保留：CSS text-indent: 2em + data-typo-indent 开关、脚本
+		    applyIndent/currentIndent、localStorage lp-indent、预绘制脚本同步；
+		    解禁=恢复本 label 行即可（与分割线 hr 一并）。lp-indent 旧值无害留存。 */}
+		{/* <hr class="lp-divider" />
 		<label class="lp-hang-row">
 			<input type="checkbox" data-lp-indent-input />
 			<span>{labels.indent}</span>
-		</label>
+		</label> */}
 	</div>
 </lp-typography>
 
