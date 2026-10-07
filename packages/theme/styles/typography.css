@@ -31,15 +31,18 @@
 }
 
 /* Step-scaled line height (standard spacing): smaller font sizes get looser
-   leading — 15px→2.05 / 17px→2 / 22px→1.9 (0.4.0 三档；0.2.x 五档梯度的对应值）。
-   Controls set `data-lp-step` (0=15px / 1=17px / 2=22px) on <html>; the default
-   step (1 = 17px) intentionally matches the plugin's `lineHeight` option so
+   leading — 14px→2.1 / 15.5px→2.05 / 17px→2 / 19px→1.95 / 22px→1.9
+   (0.4.1 五档恢复=0.2.x 梯度的 C 定稿值；0.4.0 曾折衷三档，用户拍板回退）。
+   Controls set `data-lp-step` (0=14px … 4=22px) on <html>; the default
+   step (2 = 17px) intentionally matches the plugin's `lineHeight` option so
    first paint (before JS) and reset render identically. These selectors
    out-specificity the plugin's `:root` variable injection, so no cascade-order
    conflict with dev's async Vite style injection. */
-html[data-lp-step='0'] { --lp-lh-base: 2.05; }
-html[data-lp-step='1'] { --lp-lh-base: 2; }
-html[data-lp-step='2'] { --lp-lh-base: 1.9; }
+html[data-lp-step='0'] { --lp-lh-base: 2.1; }
+html[data-lp-step='1'] { --lp-lh-base: 2.05; }
+html[data-lp-step='2'] { --lp-lh-base: 2; }
+html[data-lp-step='3'] { --lp-lh-base: 1.95; }
+html[data-lp-step='4'] { --lp-lh-base: 1.9; }
 
 /* Spacing preference (TypographyDropdown 行距档)：compact 0.9× / standard 1× /
    loose 1.1× of the step base. Standard needs no rule (scale defaults to 1). */
@@ -57,6 +60,12 @@ html[data-lp-spacing='2'] { --lp-lh-scale: 1.1; }
    本声明即不悬挂，无副作用降级；控件与持久化对全浏览器生效，视觉仅 Safari 可见。 */
 html[data-lp-hang='1'] .sl-markdown-content {
 	hanging-punctuation: first allow-end;
+}
+
+/* First-line indent toggle (TypographyDropdown 首行缩进开关; off by default).
+   2em 缩进为 CJK 排版惯例；属性名 data-typo-indent 沿用消费端既有开关名。 */
+html[data-typo-indent='1'] .sl-markdown-content > p {
+	text-indent: 2em;
 }
 
 /* Keep headings serif inside content for a coherent reading feel. */

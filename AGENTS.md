@@ -19,7 +19,7 @@
 
 ## 已踩过的坑
 
-- **行距档位梯度（0.2.0 起；0.4.0 改三档+行距偏好）**：控件在 `<html>` 上设 `data-lp-step`（0.4.0 起 0–2=15/17/22px；0.3.x 为 0–4 五档），typography.css 用 `html[data-lp-step=N]` 选择器按档设 `--lp-lh-base`（15px→2.05 / 17px→2 / 22px→1.9；0.3.x 五档值 2.15/2.05/2/1.9/1.8 为前代），`data-lp-spacing=0/2` 再乘 `--lp-lh-scale` 0.9/1.1（TypographyDropdown 行距档），最终 `line-height: calc(base×scale)`。该选择器优先级高于插件 head 注入的 `:root` 变量，不受 dev 异步 Vite 样式排序影响（避开了下方第 3 条的坑）。**插件默认档（17px）lineHeight 默认值就是 2**——首访无 JS/reset 归零都走注入值，与 `data-lp-step=1` 渲染一致；预绘制内联脚本恢复 localStorage 时必须连同 `data-lp-step`（以及 0.4.0 的 `data-lp-spacing`/`data-lp-hang`）一起恢复，否则非默认档读者首屏闪跳。旧五档存值（14/15.5/19px 等）由预绘制脚本按最近档迁移到三档。
+- **行距档位梯度（0.2.0 起；0.4.0 改三档+行距偏好）**：控件在 `<html>` 上设 `data-lp-step`（0–4=14/15.5/17/19/22px（0.4.0 曾折衷三档 15/17/22，用户实测后 0.4.1 恢复五档）），typography.css 用 `html[data-lp-step=N]` 选择器按档设 `--lp-lh-base`（14px→2.1 / 15.5px→2.05 / 17px→2 / 19px→1.95 / 22px→1.9=0.2.x 梯度的 C 定稿值），`data-lp-spacing=0/2` 再乘 `--lp-lh-scale` 0.9/1.1（TypographyDropdown 行距档）；缩进开关 `data-typo-indent=1` → `text-indent: 2em`，最终 `line-height: calc(base×scale)`。该选择器优先级高于插件 head 注入的 `:root` 变量，不受 dev 异步 Vite 样式排序影响（避开了下方第 3 条的坑）。**插件默认档（17px）lineHeight 默认值就是 2**——首访无 JS/reset 归零都走注入值，与 `data-lp-step=1` 渲染一致；预绘制内联脚本恢复 localStorage 时必须连同 `data-lp-step`（以及 0.4.0 的 `data-lp-spacing`/`data-lp-hang`）一起恢复，否则非默认档读者首屏闪跳。非当档存值（含 0.4.0 三档折衷期的 15px 等）由预绘制脚本按最近档迁移。
 - **悬挂开关（0.4.0）**：`data-lp-hang="1"` → `hanging-punctuation: first allow-end`；Safari 与 Chromium 139+ 支持，旧引擎忽略声明即不悬挂（无副作用降级）。
 
 - **本地同名字体遮蔽 webfont**：字体栈里族名顺序敏感——若 SC 排在 TC 前，装有本地 Noto Serif SC 的机器上繁体页会用本地 SC 渲染而 TC webfont 永不加载。插件用 `--lp-serif-pack` 注入把启用的族名置顶，typography.css 的 fallback 栈里**不要**写 Noto 族名。

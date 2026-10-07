@@ -1,7 +1,7 @@
 ---
 /*
  * FontSizeSelect — dropdown variant of the reader font-size switcher.
- * Same three steps as FontSizeControl / TypographyDropdown (15 / 17 / 22px, default 17px)
+ * Same five steps as FontSizeControl / TypographyDropdown (14 / 15.5 / 17 / 19 / 22px, default 17px)
  * and the SAME persistence mechanism (localStorage key `lp-font-size`,
  * `--lp-user-size` and `data-lp-step` on <html>), so preferences made with
  * either component carry over seamlessly. The theme-injected inline script
@@ -15,7 +15,7 @@
  * applying a step requires JS, same degradation level as Starlight's own
  * ThemeSelect/LanguageSelect.
  *
- * The trigger's "A" icon scales with the active step (15–22px, Safari-reader
+ * The trigger's "A" icon scales with the active step (14–22px, Safari-reader
  * style); JS keeps it in sync on init, step change and external writes to
  * `data-lp-step`. Without JS it stays at the 1rem fallback. The caret mirrors
  * Starlight's own Select.astro down-caret (same SVG path, 1em sizing at
@@ -26,13 +26,13 @@
  */
 
 interface Props {
-	/** Step labels, smallest → largest (3 entries). */
+	/** Step labels, smallest → largest (5 entries). */
 	labels?: string[];
 	/** Accessible name of the control. */
 	ariaLabel?: string;
 }
 
-const { labels = ['小', '标准', '大'], ariaLabel = '字号' } = Astro.props;
+const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字号' } = Astro.props;
 ---
 
 <lp-font-size-select class="lp-font-size-select">
@@ -40,7 +40,7 @@ const { labels = ['小', '标准', '大'], ariaLabel = '字号' } = Astro.props;
 		<span class="sr-only">{ariaLabel}</span>
 		<span class="icon label-icon" aria-hidden="true">A</span>
 		<select autocomplete="off" aria-label={ariaLabel}>
-			{labels.map((label, i) => <option value={i} selected={i === 1}>{label}</option>)}
+			{labels.map((label, i) => <option value={i} selected={i === 2}>{label}</option>)}
 		</select>
 		<svg class="icon caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
 			<path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"></path>
@@ -52,8 +52,8 @@ const { labels = ['小', '标准', '大'], ariaLabel = '字号' } = Astro.props;
 	// ⚠️ 与 FontSizeControl.astro / TypographyDropdown.astro / index.ts 预绘制脚本
 	// 的同款逻辑保持同步修改（LP_KEY / LP_STEPS / apply；有意多写）。
 	const LP_KEY = 'lp-font-size';
-	const LP_STEPS = ['15px', '17px', '22px'];
-	const LP_DEFAULT = 1;
+	const LP_STEPS = ['14px', '15.5px', '17px', '19px', '22px'];
+	const LP_DEFAULT = 2;
 
 	function currentStep(): number {
 		const attr = document.documentElement.getAttribute('data-lp-step');
@@ -127,7 +127,7 @@ const { labels = ['小', '标准', '大'], ariaLabel = '字号' } = Astro.props;
 			inset-inline-start: 0;
 			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重）。
 			   字号随档位缩放（--lp-icon-size 由组件脚本按 data-lp-step 设置，
-			   取档位 px 值本身 15–22px）；无 JS/脚本未跑时回退 1rem。 */
+			   取档位 px 值本身 14–22px）；无 JS/脚本未跑时回退 1rem。 */
 			font-size: var(--lp-icon-size, var(--sl-label-icon-size));
 			font-weight: 400;
 			line-height: 1;

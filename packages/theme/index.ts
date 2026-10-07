@@ -28,8 +28,9 @@ export interface LargePrintConfig {
 	/**
 	 * Body line height for page content at the default font-size step (17px).
 	 * Reader controls scale line height with the font-size step (smaller size →
-	 * looser leading): 15px→2.05 / 17px→this value / 22px→1.90, and a spacing
-	 * preference (TypographyDropdown) multiplies that base by 0.9 / 1 / 1.1.
+	 * looser leading): 14px→2.10 / 15.5px→2.05 / 17px→this value / 19px→1.95 /
+	 * 22px→1.90, and a spacing preference (TypographyDropdown) multiplies that
+	 * base by 0.9 / 1 / 1.1.
 	 * @default 2
 	 */
 	lineHeight?: number
@@ -115,13 +116,13 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 							content: `:root{--lp-base-size:${baseFontSize};--lp-line-height:${lineHeight};}${warmDarkCss}${packFamilyCss}`,
 						},
 						{
-							// 预绘制内联脚本：首屏内联必须静态，字号/行距/悬挂列表在此硬编码。
+							// 预绘制内联脚本：首屏内联必须静态，字号/行距/悬挂/缩进列表在此硬编码。
 							// ⚠️ 档位列表与 FontSizeControl / FontSizeSelect / TypographyDropdown 的
 							// LP_STEPS 必须同步修改（组件各自内联打包，有意多写，改档位时几处一起改）。
-							// 旧五档存值（0.3.x：14/15.5/17/19/22px）按最近档迁移到三档。
+							// 非当档存值（含 0.4.0 三档折衷期的 15px 等）按最近档迁移。
 							tag: 'script',
 							content:
-								"try{var d=document.documentElement;var s=localStorage.getItem('lp-font-size');if(s){var L=['15px','17px','22px'],i=L.indexOf(s);if(i<0){var n=parseFloat(s),bd=1e9;for(var k=0;k<L.length;k++){var dd=Math.abs(parseFloat(L[k])-n);if(dd<bd){bd=dd;i=k}}}d.style.setProperty('--lp-user-size',L[i]);d.setAttribute('data-lp-step',String(i))}var sp=localStorage.getItem('lp-lh-spacing');if(sp==='0'||sp==='2'){d.setAttribute('data-lp-spacing',sp)}if(localStorage.getItem('lp-hang')==='1'){d.setAttribute('data-lp-hang','1')}}catch(e){}",
+								"try{var d=document.documentElement;var s=localStorage.getItem('lp-font-size');if(s){var L=['14px','15.5px','17px','19px','22px'],i=L.indexOf(s);if(i<0){var n=parseFloat(s),bd=1e9;for(var k=0;k<L.length;k++){var dd=Math.abs(parseFloat(L[k])-n);if(dd<bd){bd=dd;i=k}}}d.style.setProperty('--lp-user-size',L[i]);d.setAttribute('data-lp-step',String(i))}var sp=localStorage.getItem('lp-lh-spacing');if(sp==='0'||sp==='2'){d.setAttribute('data-lp-spacing',sp)}if(localStorage.getItem('lp-hang')==='1'){d.setAttribute('data-lp-hang','1')}if(localStorage.getItem('lp-indent')==='1'){d.setAttribute('data-typo-indent','1')}}catch(e){}",
 						},
 					],
 				})

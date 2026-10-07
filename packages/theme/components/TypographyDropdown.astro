@@ -1,15 +1,18 @@
 ---
 /*
- * TypographyDropdown — 排版下拉：字号 / 行距 / 标点悬挂 三控件（2026-10-07 用户设计）。
+ * TypographyDropdown — 排版下拉：字号 / 行距 / 标点悬挂 / 首行缩进 四控件
+ * （2026-10-07 用户设计；同日实测反馈恢复五档字号并补缩进开关）。
  *
  * 状态机器与 FontSizeControl / FontSizeSelect 完全同套（有意多写，各组件内联打包
  * 无法共享模块——改档位必须几处同步，见 index.ts 预绘制脚本注释）：
- *   - 字号：三档 15 / 17 / 22px（默认 17px），localStorage `lp-font-size` 存 px 值，
- *     `<html>` 上 `--lp-user-size` + `data-lp-step`（0/1/2）；旧五档存值按最近档迁移。
+ *   - 字号：五档 14 / 15.5 / 17 / 19 / 22px（默认 17px），localStorage `lp-font-size`
+ *     存 px 值，`<html>` 上 `--lp-user-size` + `data-lp-step`（0–4）；非当档存值按最近档迁移。
  *   - 行距：紧凑 / 标准 / 宽松（默认标准=字号档位梯度，紧凑/宽松=梯度 ×0.9 / ×1.1），
  *     localStorage `lp-lh-spacing`，`<html>` 上 `data-lp-spacing`（0/1/2）。
  *   - 悬挂：hanging-punctuation: first allow-end 开关（默认关），localStorage `lp-hang`，
  *     `<html>` 上 `data-lp-hang="1"`。
+ *   - 首行缩进：2em 段首缩进开关（默认关），localStorage `lp-indent`，`<html>` 上
+ *     `data-typo-indent="1"`（属性名沿用消费端既有开关名）。
  * 默认值即首屏无 JS 渲染态；主题预绘制内联脚本在首屏前恢复三个偏好。
  *
  * 无 JS 降级：面板可展开（无 JS 时隐藏面板——三控件都需要 JS 才能应用，与
@@ -26,14 +29,16 @@ interface Props {
 		trigger?: string;
 		/** 字号字段名。 */
 		size?: string;
-		/** 字号三档名，小→大。 */
-		sizeSteps?: [string, string, string];
+		/** 字号五档名，小→大。 */
+		sizeSteps?: [string, string, string, string, string];
 		/** 行距字段名。 */
 		spacing?: string;
 		/** 行距三档名，紧凑→宽松。 */
 		spacingSteps?: [string, string, string];
 		/** 悬挂开关名。 */
 		hang?: string;
+		/** 首行缩进开关名。 */
+		indent?: string;
 	};
 }
 
@@ -41,13 +46,14 @@ const { labels: l = {} } = Astro.props;
 const labels = {
 	trigger: '排版',
 	size: '字号',
-	sizeSteps: ['小', '标准', '大'] as [string, string, string],
+	sizeSteps: ['小', '稍小', '标准', '大', '特大'] as [string, string, string, string, string],
 	spacing: '行距',
 	spacingSteps: ['紧凑', '标准', '宽松'] as [string, string, string],
 	hang: '标点悬挂',
+	indent: '首行缩进',
 	...l,
 };
-const sizeTicks = ['15px', '17px', '22px'];
+const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 ---
 
 <lp-typography class="lp-typography">
@@ -73,7 +79,7 @@ const sizeTicks = ['15px', '17px', '22px'];
 			<input
 				type="range"
 				min="0"
-				max="2"
+				max="4"
 				step="1"
 				data-lp-size-input
 				aria-label={labels.size}
@@ -103,6 +109,10 @@ const sizeTicks = ['15px', '17px', '22px'];
 			<input type="checkbox" data-lp-hang-input />
 			<span>{labels.hang}</span>
 		</label>
+		<label class="lp-hang-row">
+			<input type="checkbox" data-lp-indent-input />
+			<span>{labels.indent}</span>
+		</label>
 	</div>
 </lp-typography>
 
@@ -112,8 +122,9 @@ const sizeTicks = ['15px', '17px', '22px'];
 	const LP_KEY = 'lp-font-size';
 	const LP_SPACING_KEY = 'lp-lh-spacing';
 	const LP_HANG_KEY = 'lp-hang';
-	const LP_STEPS = ['15px', '17px', '22px'];
-	const LP_DEFAULT = 1;
+	const LP_INDENT_KEY = 'lp-indent';
+	const LP_STEPS = ['14px', '15.5px', '17px', '19px', '22px'];
+	const LP_DEFAULT = 2;
 
 	function currentStep(): number {
 		const attr = document.documentElement.getAttribute('data-lp-step');
@@ -129,6 +140,10 @@ const sizeTicks = ['15px', '17px', '22px'];
 
 	function currentHang(): boolean {
 		return document.documentElement.getAttribute('data-lp-hang') === '1';
+	}
+
+	function currentIndent(): boolean {
+		return document.documentElement.getAttribute('data-typo-indent') === '1';
 	}
 
 	function applySize(step: number) {
@@ -160,6 +175,16 @@ const sizeTicks = ['15px', '17px', '22px'];
 		}
 	}
 
+	function applyIndent(on: boolean) {
+		if (on) {
+			document.documentElement.setAttribute('data-typo-indent', '1');
+			localStorage.setItem(LP_INDENT_KEY, '1');
+		} else {
+			document.documentElement.removeAttribute('data-typo-indent');
+			localStorage.removeItem(LP_INDENT_KEY);
+		}
+	}
+
 	const roots = document.querySelectorAll('lp-typography');
 
 	function syncRoot(root: Element) {
@@ -168,6 +193,7 @@ const sizeTicks = ['15px', '17px', '22px'];
 		const sizeInput = root.querySelector<HTMLInputElement>('[data-lp-size-input]');
 		const spacingInput = root.querySelector<HTMLInputElement>('[data-lp-spacing-input]');
 		const hangInput = root.querySelector<HTMLInputElement>('[data-lp-hang-input]');
+		const indentInput = root.querySelector<HTMLInputElement>('[data-lp-indent-input]');
 		const sizeOut = root.querySelector<HTMLOutputElement>('[data-lp-size-out]');
 		const spacingOut = root.querySelector<HTMLOutputElement>('[data-lp-spacing-out]');
 		if (sizeInput) {
@@ -181,6 +207,7 @@ const sizeTicks = ['15px', '17px', '22px'];
 			spacingInput.setAttribute('aria-valuetext', tick?.textContent?.trim() ?? '');
 		}
 		if (hangInput) hangInput.checked = currentHang();
+		if (indentInput) indentInput.checked = currentIndent();
 		if (sizeOut) {
 			const tick = root.querySelector(`[data-lp-tick="${step}"]`);
 			sizeOut.textContent = tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!;
@@ -219,6 +246,9 @@ const sizeTicks = ['15px', '17px', '22px'];
 		root.querySelector<HTMLInputElement>('[data-lp-hang-input]')?.addEventListener('change', (e) => {
 			applyHang((e.target as HTMLInputElement).checked);
 		});
+		root.querySelector<HTMLInputElement>('[data-lp-indent-input]')?.addEventListener('change', (e) => {
+			applyIndent((e.target as HTMLInputElement).checked);
+		});
 	}
 
 	// 与 FontSizeControl / FontSizeSelect 并存时同步显示值。
@@ -226,7 +256,7 @@ const sizeTicks = ['15px', '17px', '22px'];
 		for (const root of roots) syncRoot(root);
 	}).observe(document.documentElement, {
 		attributes: true,
-		attributeFilter: ['data-lp-step', 'data-lp-spacing', 'data-lp-hang'],
+		attributeFilter: ['data-lp-step', 'data-lp-spacing', 'data-lp-hang', 'data-typo-indent'],
 	});
 </script>
 
