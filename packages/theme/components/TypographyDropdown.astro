@@ -353,10 +353,21 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 			white-space: nowrap;
 		}
 
-		/* 窄视口（≤25rem/400px）触发器收敛为纯图标：汉堡菜单控件行三件并排，
-		   384px 以下带文字会与语言选择器挤撞（2026-10-07 实测 360/320 行溢出）。
-		   无障碍名由按钮 aria-label 承担，状态文案在展开面板内。 */
-		@media (max-width: 25rem) {
+		/* 与 Starlight Select.astro 同款桌面缩号：≥50rem 时文字 --sl-text-sm，
+		   与 ThemeSelect/LangSelect 选项文字同大——否则「排版」比邻控件大一号
+		   （2026-10-07 用户实测反馈）。图标 A 维持 1rem（FontSizeSelect 时代
+		   迭代定稿值，勿随文字缩）。 */
+		@media (min-width: 50rem) {
+			.lp-typography-trigger {
+				font-size: var(--sl-text-sm);
+			}
+		}
+
+		/* 窄视口（≤22rem/352px）触发器收敛为纯图标：352px 以下带文字会与
+		   语言选择器挤撞（2026-10-07 实测 340/320 行溢出；间距收到 0.5rem 后
+		   360px 起带文字已放得下）。390px 必须保留「排版」二字（用户实测
+		   反馈：只显示 A 不可辨识）。无障碍名由按钮 aria-label 承担。 */
+		@media (max-width: 22rem) {
 			.trigger-label {
 				position: absolute;
 				width: 1px;
