@@ -1,9 +1,9 @@
 ---
 /*
  * FontSizeControl — reader font-size switcher (A− / reset / A+).
- * Five steps around the theme base size; the choice is persisted in
+ * Three steps (15 / 17 / 22px) around the theme base size; the choice is persisted in
  * localStorage and applied through `--lp-user-size` on <html>.
- * The active step is also exposed as `data-lp-step` (0–4) on <html> so
+ * The active step is also exposed as `data-lp-step` (0–2) on <html> so
  * typography.css can scale line height with the chosen size.
  * A theme-injected inline script re-applies the saved value before first paint.
  *
@@ -18,9 +18,11 @@
 </lp-font-size>
 
 <script>
+	// ⚠️ 与 FontSizeSelect.astro / TypographyDropdown.astro / index.ts 预绘制脚本
+	// 的同款逻辑保持同步修改（有意多写）。
 	const LP_KEY = 'lp-font-size'
-	const LP_STEPS = ['14px', '15.5px', '17px', '19px', '22px']
-	const LP_DEFAULT = 2
+	const LP_STEPS = ['15px', '17px', '22px']
+	const LP_DEFAULT = 1
 
 	function currentStep(): number {
 		const v = document.documentElement.style.getPropertyValue('--lp-user-size').trim()

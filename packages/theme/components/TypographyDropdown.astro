@@ -1,0 +1,349 @@
+---
+/*
+ * TypographyDropdown — 排版下拉：字号 / 行距 / 标点悬挂 三控件（2026-10-07 用户设计）。
+ *
+ * 状态机器与 FontSizeControl / FontSizeSelect 完全同套（有意多写，各组件内联打包
+ * 无法共享模块——改档位必须几处同步，见 index.ts 预绘制脚本注释）：
+ *   - 字号：三档 15 / 17 / 22px（默认 17px），localStorage `lp-font-size` 存 px 值，
+ *     `<html>` 上 `--lp-user-size` + `data-lp-step`（0/1/2）；旧五档存值按最近档迁移。
+ *   - 行距：紧凑 / 标准 / 宽松（默认标准=字号档位梯度，紧凑/宽松=梯度 ×0.9 / ×1.1），
+ *     localStorage `lp-lh-spacing`，`<html>` 上 `data-lp-spacing`（0/1/2）。
+ *   - 悬挂：hanging-punctuation: first allow-end 开关（默认关），localStorage `lp-hang`，
+ *     `<html>` 上 `data-lp-hang="1"`。
+ * 默认值即首屏无 JS 渲染态；主题预绘制内联脚本在首屏前恢复三个偏好。
+ *
+ * 无 JS 降级：面板可展开（无 JS 时隐藏面板——三控件都需要 JS 才能应用，与
+ * Starlight 自带 ThemeSelect 同级降档；触发器保持可聚焦）。
+ *
+ * Usage: place inside a Header/sidebar override, e.g. next to <ThemeSelect />.
+ * Pass `labels` to localize (e.g. Traditional Chinese).
+ */
+
+interface Props {
+	/** UI 文案（缺省简体；繁体站传入正体）。 */
+	labels?: {
+		/** 触发器文案（排版）。 */
+		trigger?: string;
+		/** 字号字段名。 */
+		size?: string;
+		/** 字号三档名，小→大。 */
+		sizeSteps?: [string, string, string];
+		/** 行距字段名。 */
+		spacing?: string;
+		/** 行距三档名，紧凑→宽松。 */
+		spacingSteps?: [string, string, string];
+		/** 悬挂开关名。 */
+		hang?: string;
+	};
+}
+
+const { labels: l = {} } = Astro.props;
+const labels = {
+	trigger: '排版',
+	size: '字号',
+	sizeSteps: ['小', '标准', '大'] as [string, string, string],
+	spacing: '行距',
+	spacingSteps: ['紧凑', '标准', '宽松'] as [string, string, string],
+	hang: '标点悬挂',
+	...l,
+};
+const sizeTicks = ['15px', '17px', '22px'];
+---
+
+<lp-typography class="lp-typography">
+	<button
+		type="button"
+		class="lp-typography-trigger"
+		aria-haspopup="true"
+		aria-expanded="false"
+		aria-label={labels.trigger}
+	>
+		<span class="icon label-icon" aria-hidden="true">A</span>
+		<span class="trigger-label">{labels.trigger}</span>
+		<svg class="icon caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+			<path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"></path>
+		</svg>
+	</button>
+	<div class="lp-typography-panel" hidden>
+		<div class="lp-field">
+			<div class="lp-field-head">
+				<span class="lp-field-label" data-lp-size-label>{labels.size}</span>
+				<output data-lp-size-out></output>
+			</div>
+			<input
+				type="range"
+				min="0"
+				max="2"
+				step="1"
+				data-lp-size-input
+				aria-label={labels.size}
+			/>
+			<div class="lp-ticks" aria-hidden="true">
+				{labels.sizeSteps.map((t, i) => <span data-lp-tick={i}>{t}<br />{sizeTicks[i]}</span>)}
+			</div>
+		</div>
+		<div class="lp-field">
+			<div class="lp-field-head">
+				<span class="lp-field-label">{labels.spacing}</span>
+				<output data-lp-spacing-out></output>
+			</div>
+			<input
+				type="range"
+				min="0"
+				max="2"
+				step="1"
+				data-lp-spacing-input
+				aria-label={labels.spacing}
+			/>
+			<div class="lp-ticks" aria-hidden="true">
+				{labels.spacingSteps.map((t, i) => <span data-lp-tick={i}>{t}</span>)}
+			</div>
+		</div>
+		<label class="lp-hang-row">
+			<input type="checkbox" data-lp-hang-input />
+			<span>{labels.hang}</span>
+		</label>
+	</div>
+</lp-typography>
+
+<script>
+	// ⚠️ 与 FontSizeControl.astro / FontSizeSelect.astro / index.ts 预绘制脚本的
+	// LP_KEY / LP_STEPS / apply 保持同步修改（有意多写，见组件头注释）。
+	const LP_KEY = 'lp-font-size';
+	const LP_SPACING_KEY = 'lp-lh-spacing';
+	const LP_HANG_KEY = 'lp-hang';
+	const LP_STEPS = ['15px', '17px', '22px'];
+	const LP_DEFAULT = 1;
+
+	function currentStep(): number {
+		const attr = document.documentElement.getAttribute('data-lp-step');
+		const n = attr === null ? LP_DEFAULT : Number.parseInt(attr, 10);
+		return Number.isFinite(n) ? Math.max(0, Math.min(LP_STEPS.length - 1, n)) : LP_DEFAULT;
+	}
+
+	function currentSpacing(): number {
+		const attr = document.documentElement.getAttribute('data-lp-spacing');
+		const n = attr === null ? 1 : Number.parseInt(attr, 10);
+		return Number.isFinite(n) ? Math.max(0, Math.min(2, n)) : 1;
+	}
+
+	function currentHang(): boolean {
+		return document.documentElement.getAttribute('data-lp-hang') === '1';
+	}
+
+	function applySize(step: number) {
+		const clamped = Math.max(0, Math.min(LP_STEPS.length - 1, step));
+		document.documentElement.setAttribute('data-lp-step', String(clamped));
+		if (clamped === LP_DEFAULT) {
+			document.documentElement.style.removeProperty('--lp-user-size');
+			localStorage.removeItem(LP_KEY);
+		} else {
+			document.documentElement.style.setProperty('--lp-user-size', LP_STEPS[clamped]!);
+			localStorage.setItem(LP_KEY, LP_STEPS[clamped]!);
+		}
+	}
+
+	function applySpacing(n: number) {
+		const clamped = Math.max(0, Math.min(2, n));
+		document.documentElement.setAttribute('data-lp-spacing', String(clamped));
+		if (clamped === 1) localStorage.removeItem(LP_SPACING_KEY);
+		else localStorage.setItem(LP_SPACING_KEY, String(clamped));
+	}
+
+	function applyHang(on: boolean) {
+		if (on) {
+			document.documentElement.setAttribute('data-lp-hang', '1');
+			localStorage.setItem(LP_HANG_KEY, '1');
+		} else {
+			document.documentElement.removeAttribute('data-lp-hang');
+			localStorage.removeItem(LP_HANG_KEY);
+		}
+	}
+
+	const roots = document.querySelectorAll('lp-typography');
+
+	function syncRoot(root: Element) {
+		const step = currentStep();
+		const spacing = currentSpacing();
+		const sizeInput = root.querySelector<HTMLInputElement>('[data-lp-size-input]');
+		const spacingInput = root.querySelector<HTMLInputElement>('[data-lp-spacing-input]');
+		const hangInput = root.querySelector<HTMLInputElement>('[data-lp-hang-input]');
+		const sizeOut = root.querySelector<HTMLOutputElement>('[data-lp-size-out]');
+		const spacingOut = root.querySelector<HTMLOutputElement>('[data-lp-spacing-out]');
+		if (sizeInput) {
+			sizeInput.value = String(step);
+			const tick = root.querySelector(`[data-lp-tick="${step}"]`);
+			sizeInput.setAttribute('aria-valuetext', tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!);
+		}
+		if (spacingInput) {
+			spacingInput.value = String(spacing);
+			const tick = root.querySelector(`[data-lp-tick="${spacing}"]`);
+			spacingInput.setAttribute('aria-valuetext', tick?.textContent?.trim() ?? '');
+		}
+		if (hangInput) hangInput.checked = currentHang();
+		if (sizeOut) {
+			const tick = root.querySelector(`[data-lp-tick="${step}"]`);
+			sizeOut.textContent = tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!;
+		}
+		if (spacingOut) {
+			const tick = root.querySelector(`[data-lp-tick="${spacing}"]`);
+			spacingOut.textContent = tick?.textContent?.trim() ?? '';
+		}
+	}
+
+	for (const root of roots) {
+		syncRoot(root);
+		const trigger = root.querySelector<HTMLButtonElement>('.lp-typography-trigger');
+		const panel = root.querySelector<HTMLElement>('.lp-typography-panel');
+		const setOpen = (open: boolean) => {
+			if (!trigger || !panel) return;
+			panel.hidden = !open;
+			trigger.setAttribute('aria-expanded', String(open));
+		};
+		trigger?.addEventListener('click', () => setOpen(panel?.hidden ?? true));
+		document.addEventListener('click', (e) => {
+			if (!root.contains(e.target as Node)) setOpen(false);
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && !panel?.hidden) {
+				setOpen(false);
+				trigger?.focus();
+			}
+		});
+		root.querySelector<HTMLInputElement>('[data-lp-size-input]')?.addEventListener('input', (e) => {
+			applySize(Number.parseInt((e.target as HTMLInputElement).value, 10));
+		});
+		root.querySelector<HTMLInputElement>('[data-lp-spacing-input]')?.addEventListener('input', (e) => {
+			applySpacing(Number.parseInt((e.target as HTMLInputElement).value, 10));
+		});
+		root.querySelector<HTMLInputElement>('[data-lp-hang-input]')?.addEventListener('change', (e) => {
+			applyHang((e.target as HTMLInputElement).checked);
+		});
+	}
+
+	// 与 FontSizeControl / FontSizeSelect 并存时同步显示值。
+	new MutationObserver(() => {
+		for (const root of roots) syncRoot(root);
+	}).observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ['data-lp-step', 'data-lp-spacing', 'data-lp-hang'],
+	});
+</script>
+
+<style>
+	@layer starlight.core {
+		.lp-typography {
+			position: relative;
+		}
+
+		.lp-typography-trigger {
+			--sl-label-icon-size: 1rem;
+			--sl-caret-size: 1.25rem;
+			--sl-inline-padding: 0.5rem;
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+			border: 0;
+			padding-block: 0.625rem;
+			padding-inline: calc(var(--sl-label-icon-size) + var(--sl-inline-padding) + 0.25rem)
+				calc(var(--sl-caret-size) + var(--sl-inline-padding) + 0.25rem);
+			background-color: transparent;
+			color: var(--sl-color-gray-2);
+			cursor: pointer;
+		}
+
+		/* 与 Starlight/rapide 头部控件同族：hover/focus 变 accent 色而非纯白 */
+		.lp-typography-trigger:is(:hover, :focus-visible) {
+			color: var(--sl-color-accent-high);
+		}
+
+		.label-icon,
+		.caret {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+		}
+
+		.label-icon {
+			inset-inline-start: 0;
+			font-size: var(--sl-label-icon-size);
+			font-weight: 400;
+			line-height: 1;
+		}
+
+		.caret {
+			inset-inline-end: 0;
+			font-size: var(--sl-caret-size);
+			width: 1em;
+			height: 1em;
+		}
+
+		.trigger-label {
+			white-space: nowrap;
+		}
+
+		.lp-typography-panel {
+			position: absolute;
+			inset-inline-end: 0;
+			top: calc(100% + 0.25rem);
+			z-index: 20;
+			width: 15rem;
+			padding: 0.875rem 1rem 1rem;
+			border: 1px solid var(--sl-color-gray-5);
+			border-radius: 0.5rem;
+			background-color: var(--sl-color-bg-nav);
+			box-shadow: var(--sl-shadow-md);
+			color: var(--sl-color-gray-1);
+		}
+
+		.lp-field + .lp-field {
+			margin-top: 1rem;
+		}
+
+		.lp-field-head {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			gap: 0.5rem;
+			font-size: var(--sl-text-sm);
+		}
+
+		.lp-field-label {
+			font-weight: 600;
+		}
+
+		.lp-field output {
+			color: var(--sl-color-gray-3);
+		}
+
+		.lp-field input[type='range'] {
+			width: 100%;
+			margin-top: 0.25rem;
+			accent-color: var(--sl-color-accent-high);
+		}
+
+		.lp-ticks {
+			display: flex;
+			justify-content: space-between;
+			margin-top: 0.125rem;
+			font-size: var(--sl-text-xs);
+			color: var(--sl-color-gray-3);
+			text-align: center;
+		}
+
+		.lp-hang-row {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-top: 1rem;
+			font-size: var(--sl-text-sm);
+			cursor: pointer;
+		}
+
+		.lp-hang-row input {
+			accent-color: var(--sl-color-accent-high);
+		}
+	}
+</style>

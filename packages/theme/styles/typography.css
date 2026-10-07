@@ -20,28 +20,43 @@
 	--lp-serif-stack: var(--lp-serif-pack,) var(--lp-serif-fallback);
 }
 
-/* Serif reading body. */
+/* Serif reading body.
+   Line height = step base × spacing scale (both set on <html> by the reader
+   controls; see the two selector groups below). Falls back to the plugin's
+   `lineHeight` option (`--lp-line-height`) × 1 before JS restores preferences. */
 .sl-markdown-content {
 	font-family: var(--lp-serif-stack);
 	font-size: var(--lp-user-size, var(--lp-base-size, 17px));
-	line-height: var(--lp-line-height, 2);
+	line-height: calc(var(--lp-lh-base, var(--lp-line-height, 2)) * var(--lp-lh-scale, 1));
 }
 
-/* Step-scaled line height: smaller font sizes get looser leading.
-   FontSizeControl sets `data-lp-step` (0=14px … 4=22px) on <html>; the
-   default step (2 = 17px) intentionally matches the plugin's `lineHeight`
-   option so first paint (before JS) and reset render identically.
-   These selectors out-specificity the plugin's `:root` variable injection,
-   so no cascade-order conflict with dev's async Vite style injection. */
-html[data-lp-step='0'] { --lp-line-height: 2.15; }
-html[data-lp-step='1'] { --lp-line-height: 2.05; }
-html[data-lp-step='2'] { --lp-line-height: 2; }
-html[data-lp-step='3'] { --lp-line-height: 1.9; }
-html[data-lp-step='4'] { --lp-line-height: 1.8; }
+/* Step-scaled line height (standard spacing): smaller font sizes get looser
+   leading — 15px→2.05 / 17px→2 / 22px→1.9 (0.4.0 三档；0.2.x 五档梯度的对应值）。
+   Controls set `data-lp-step` (0=15px / 1=17px / 2=22px) on <html>; the default
+   step (1 = 17px) intentionally matches the plugin's `lineHeight` option so
+   first paint (before JS) and reset render identically. These selectors
+   out-specificity the plugin's `:root` variable injection, so no cascade-order
+   conflict with dev's async Vite style injection. */
+html[data-lp-step='0'] { --lp-lh-base: 2.05; }
+html[data-lp-step='1'] { --lp-lh-base: 2; }
+html[data-lp-step='2'] { --lp-lh-base: 1.9; }
+
+/* Spacing preference (TypographyDropdown 行距档)：compact 0.9× / standard 1× /
+   loose 1.1× of the step base. Standard needs no rule (scale defaults to 1). */
+html[data-lp-spacing='0'] { --lp-lh-scale: 0.9; }
+html[data-lp-spacing='2'] { --lp-lh-scale: 1.1; }
 
 /* Slightly looser paragraph rhythm for long-form reading. */
 .sl-markdown-content > p + p {
-	margin-top: 1.1em;
+	margin-top: var(--lp-para-gap, 1.35em);
+}
+
+/* Hanging punctuation toggle (TypographyDropdown 悬挂开关; off by default).
+   Support: Safari only (实测 HeadlessChrome/149 `CSS.supports('hanging-punctuation',
+   'first allow-end')` = false——Chromium 系截至 149 未实现)。不支持的引擎忽略
+   本声明即不悬挂，无副作用降级；控件与持久化对全浏览器生效，视觉仅 Safari 可见。 */
+html[data-lp-hang='1'] .sl-markdown-content {
+	hanging-punctuation: first allow-end;
 }
 
 /* Keep headings serif inside content for a coherent reading feel. */
