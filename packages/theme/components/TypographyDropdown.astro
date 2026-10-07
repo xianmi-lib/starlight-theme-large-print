@@ -129,6 +129,8 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 <script>
 	// ⚠️ 与 FontSizeControl.astro / FontSizeSelect.astro / index.ts 预绘制脚本的
 	// LP_KEY / LP_STEPS / apply 保持同步修改（有意多写，见组件头注释）。
+	// 用 custom element 单次 define：dev 模块重复求值时 listener 不会双挂
+	// （双挂=一次点击 toggle 两次=面板开完即关，2026-10-07 实测踩过）。
 	const LP_KEY = 'lp-font-size';
 	const LP_SPACING_KEY = 'lp-lh-spacing';
 	const LP_HANG_KEY = 'lp-hang';
@@ -195,79 +197,106 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 		}
 	}
 
-	const roots = document.querySelectorAll('lp-typography');
+	if (!customElements.get('lp-typography')) {
+		const instances = new Set<Element>();
 
-	function syncRoot(root: Element) {
-		const step = currentStep();
-		const spacing = currentSpacing();
-		const sizeInput = root.querySelector<HTMLInputElement>('[data-lp-size-input]');
-		const spacingInput = root.querySelector<HTMLInputElement>('[data-lp-spacing-input]');
-		const hangInput = root.querySelector<HTMLInputElement>('[data-lp-hang-input]');
-		const indentInput = root.querySelector<HTMLInputElement>('[data-lp-indent-input]');
-		const sizeOut = root.querySelector<HTMLOutputElement>('[data-lp-size-out]');
-		const spacingOut = root.querySelector<HTMLOutputElement>('[data-lp-spacing-out]');
-		if (sizeInput) {
-			sizeInput.value = String(step);
-			const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
-			sizeInput.setAttribute('aria-valuetext', tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!);
+		function syncRoot(root: Element) {
+			const step = currentStep();
+			const spacing = currentSpacing();
+			const sizeInput = root.querySelector<HTMLInputElement>('[data-lp-size-input]');
+			const spacingInput = root.querySelector<HTMLInputElement>('[data-lp-spacing-input]');
+			const hangInput = root.querySelector<HTMLInputElement>('[data-lp-hang-input]');
+			const indentInput = root.querySelector<HTMLInputElement>('[data-lp-indent-input]');
+			const sizeOut = root.querySelector<HTMLOutputElement>('[data-lp-size-out]');
+			const spacingOut = root.querySelector<HTMLOutputElement>('[data-lp-spacing-out]');
+			if (sizeInput) {
+				sizeInput.value = String(step);
+				const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
+				sizeInput.setAttribute('aria-valuetext', tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!);
+			}
+			if (spacingInput) {
+				spacingInput.value = String(spacing);
+				const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
+				spacingInput.setAttribute('aria-valuetext', tick?.textContent?.trim() ?? '');
+			}
+			if (hangInput) hangInput.checked = currentHang();
+			if (indentInput) indentInput.checked = currentIndent();
+			if (sizeOut) {
+				const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
+				sizeOut.textContent = tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!;
+			}
+			if (spacingOut) {
+				const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
+				spacingOut.textContent = tick?.textContent?.trim() ?? '';
+			}
 		}
-		if (spacingInput) {
-			spacingInput.value = String(spacing);
-			const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
-			spacingInput.setAttribute('aria-valuetext', tick?.textContent?.trim() ?? '');
-		}
-		if (hangInput) hangInput.checked = currentHang();
-		if (indentInput) indentInput.checked = currentIndent();
-		if (sizeOut) {
-			const tick = root.querySelector(`[data-lp-size-tick="${step}"]`);
-			sizeOut.textContent = tick?.textContent?.replace(/\s+/g, ' ').trim() ?? LP_STEPS[step]!;
-		}
-		if (spacingOut) {
-			const tick = root.querySelector(`[data-lp-spacing-tick="${spacing}"]`);
-			spacingOut.textContent = tick?.textContent?.trim() ?? '';
-		}
-	}
 
-	for (const root of roots) {
-		syncRoot(root);
-		const trigger = root.querySelector<HTMLButtonElement>('.lp-typography-trigger');
-		const panel = root.querySelector<HTMLElement>('.lp-typography-panel');
-		const setOpen = (open: boolean) => {
+		class LPTypography extends HTMLElement {
+			connectedCallback() {
+				instances.add(this);
+				syncRoot(this);
+				const trigger = this.querySelector<HTMLButtonElement>('.lp-typography-trigger');
+				const panel = this.querySelector<HTMLElement>('.lp-typography-panel');
+				trigger?.addEventListener('click', () => setOpen(this, panel?.hidden ?? true));
+				this.querySelector<HTMLInputElement>('[data-lp-size-input]')?.addEventListener('input', (e) => {
+					applySize(Number.parseInt((e.target as HTMLInputElement).value, 10));
+				});
+				this.querySelector<HTMLInputElement>('[data-lp-spacing-input]')?.addEventListener('input', (e) => {
+					applySpacing(Number.parseInt((e.target as HTMLInputElement).value, 10));
+				});
+				this.querySelector<HTMLInputElement>('[data-lp-hang-input]')?.addEventListener('change', (e) => {
+					applyHang((e.target as HTMLInputElement).checked);
+				});
+				this.querySelector<HTMLInputElement>('[data-lp-indent-input]')?.addEventListener('change', (e) => {
+					applyIndent((e.target as HTMLInputElement).checked);
+				});
+			}
+		}
+		customElements.define('lp-typography', LPTypography);
+
+		function setOpen(root: Element, open: boolean) {
+			const trigger = root.querySelector<HTMLButtonElement>('.lp-typography-trigger');
+			const panel = root.querySelector<HTMLElement>('.lp-typography-panel');
 			if (!trigger || !panel) return;
 			panel.hidden = !open;
 			trigger.setAttribute('aria-expanded', String(open));
-		};
-		trigger?.addEventListener('click', () => setOpen(panel?.hidden ?? true));
+			if (open) {
+				// 视口夹取：左置触发器下面板可能挂出左缘、右置触发器下挂出右缘，
+				// 平移面板本体（不动触发器）保证窄屏（320px+）完整可见。
+				panel.style.insetInlineStart = '0px';
+				const pr = panel.getBoundingClientRect();
+				const vw = document.documentElement.clientWidth;
+				let shift = 0;
+				if (pr.left < 8) shift = 8 - pr.left;
+				else if (pr.right > vw - 8) shift = (vw - 8) - pr.right;
+				if (shift !== 0) panel.style.insetInlineStart = `${shift}px`;
+			}
+		}
+
+		// 全局各一份（define-once 保证不重复挂）：点外收起、Esc 收起、属性同步。
 		document.addEventListener('click', (e) => {
-			if (!root.contains(e.target as Node)) setOpen(false);
-		});
-		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && !panel?.hidden) {
-				setOpen(false);
-				trigger?.focus();
+			for (const root of instances) {
+				if (!root.contains(e.target as Node)) setOpen(root, false);
 			}
 		});
-		root.querySelector<HTMLInputElement>('[data-lp-size-input]')?.addEventListener('input', (e) => {
-			applySize(Number.parseInt((e.target as HTMLInputElement).value, 10));
+		document.addEventListener('keydown', (e) => {
+			if (e.key !== 'Escape') return;
+			for (const root of instances) {
+				const panel = root.querySelector<HTMLElement>('.lp-typography-panel');
+				if (panel && !panel.hidden) {
+					setOpen(root, false);
+					root.querySelector<HTMLButtonElement>('.lp-typography-trigger')?.focus();
+				}
+			}
 		});
-		root.querySelector<HTMLInputElement>('[data-lp-spacing-input]')?.addEventListener('input', (e) => {
-			applySpacing(Number.parseInt((e.target as HTMLInputElement).value, 10));
-		});
-		root.querySelector<HTMLInputElement>('[data-lp-hang-input]')?.addEventListener('change', (e) => {
-			applyHang((e.target as HTMLInputElement).checked);
-		});
-		root.querySelector<HTMLInputElement>('[data-lp-indent-input]')?.addEventListener('change', (e) => {
-			applyIndent((e.target as HTMLInputElement).checked);
+		// 与 FontSizeControl / FontSizeSelect 并存时同步显示值。
+		new MutationObserver(() => {
+			for (const root of instances) syncRoot(root);
+		}).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-lp-step', 'data-lp-spacing', 'data-lp-hang', 'data-typo-indent'],
 		});
 	}
-
-	// 与 FontSizeControl / FontSizeSelect 并存时同步显示值。
-	new MutationObserver(() => {
-		for (const root of roots) syncRoot(root);
-	}).observe(document.documentElement, {
-		attributes: true,
-		attributeFilter: ['data-lp-step', 'data-lp-spacing', 'data-lp-hang', 'data-typo-indent'],
-	});
 </script>
 
 <style>
@@ -324,10 +353,28 @@ const sizeTicks = ['14px', '15.5px', '17px', '19px', '22px'];
 			white-space: nowrap;
 		}
 
+		/* 窄视口（≤25rem/400px）触发器收敛为纯图标：汉堡菜单控件行三件并排，
+		   384px 以下带文字会与语言选择器挤撞（2026-10-07 实测 360/320 行溢出）。
+		   无障碍名由按钮 aria-label 承担，状态文案在展开面板内。 */
+		@media (max-width: 25rem) {
+			.trigger-label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip-path: inset(50%);
+				white-space: nowrap;
+			}
+		}
+
 		.lp-typography-panel {
+			/* 默认贴触发器左缘展开：右缘对齐（inset-inline-end）只适合右置触发器，
+			   左置（移动菜单控件行）会让面板挂出视口左缘被裁——2026-10-07 用户
+			   截图实证。开合时 JS 再按视口夹取（见 setOpen）。 */
 			position: absolute;
-			inset-inline-end: 0;
+			inset-inline-start: 0;
 			top: calc(100% + 0.25rem);
+			max-width: calc(100vw - 1.5rem);
 			z-index: 20;
 			width: 15rem;
 			padding: 0.875rem 1rem 1rem;
