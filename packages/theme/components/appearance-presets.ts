@@ -1,8 +1,11 @@
 // packages/theme/components/appearance-presets.ts
 // 纸张色预设（13/14 项）：bg/text hex 照抄老站 goodweb.net.cn set_color；
 // mode = 该预设绑定的明/暗态。id = bg 小写 hex 无 '#'（data-paper 与存储值用）。
-// ⚠️ 同步点：index.ts 预绘制脚本构建期 JSON 序列化本表；AppearanceSelect.astro
-// frontmatter 与客户端脚本 import 本文件（相对导入随组件打包）。
+// ⚠️ 同步点（三处）：①index.ts 预绘制脚本构建期 JSON 序列化本表；②AppearanceSelect.astro
+// frontmatter 与客户端脚本 import 本文件（相对导入随组件打包）；③styles/paper.css 是
+// 手工第二份数据（同套 14 组 id/bg/text 手写规则）——改 PAPER_PRESETS 必须同改
+// paper.css 的 14 条规则（id 选择器 + --lp-paper-bg/-text），否则色块预览与实际纸色
+// 静默漂移。
 export interface PaperPreset {
 	/** 小写 hex，无 '#'。 */
 	id: string;

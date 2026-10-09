@@ -9,7 +9,7 @@
   - `styles/typography.css`：排版核心（字号/行高/段距/衬线栈/页标题），全部走 CSS 变量
   - `components/FontSizeControl.astro`：A−/A/A+ 字号按钮（五档 14–22px，localStorage，自定义元素 `<lp-font-size>`）
   - `components/FontSizeSelect.astro`：下拉变体（0.3.0 起，原生 `<select>`，档位名 labels 参数化）——与 FontSizeControl **共用同一 LP_KEY/data-lp-step 机制**，两组件脚本里的 LP_KEY/LP_STEPS/apply 是**有意双写**（组件各自内联打包，无法共享模块），改档位必须两处同步
-  - `components/appearance-presets.ts`：纸张色预设表 `PAPER_PRESETS`（14 项，`{id,bg,text,mode,name}`，bg/text hex 照抄老站 set_color）。**数据单一源**：`index.ts` 预绘制脚本构建期 JSON 序列化本表，`AppearanceSelect.astro` frontmatter 与客户端脚本相对 import 同一文件——改表只改这里
+  - `components/appearance-presets.ts`：纸张色预设表 `PAPER_PRESETS`（14 项，`{id,bg,text,mode,name}`，bg/text hex 照抄老站 set_color）。**数据单一源**（同步点①②）：`index.ts` 预绘制脚本构建期 JSON 序列化本表，`AppearanceSelect.astro` frontmatter 与客户端脚本相对 import 同一文件——改表只改这里；**同步点③**：`styles/paper.css` 是手工第二份数据（同套 14 组 id/bg/text 手写规则）——改 PAPER_PRESETS 必须同改 paper.css 的 14 条规则（id 选择器 + --lp-paper-bg/-text），否则色块预览与实际纸色静默漂移
   - `components/AppearanceSelect.astro`：「外观」下拉（跟随系统 / 浅色 / 深色 / 纸张色 14 色网格，面板共 17 项），取代 Starlight ThemeSelect（**勿两个同时渲染**）。状态机：localStorage `lp-appearance`（auto=不存 | `light` | `dark` | `paper:<id>`）→ `<html>` 的 `data-theme` + `data-paper`，并镜像写 `starlight-theme`；面板机器同 TypographyDropdown（视口夹取 / Esc / define-once）；交互派发窗口事件 `CustomEvent('lp-appearance')`（站点埋点消费，主题不依赖 GA）。exports 开 `./components/AppearanceSelect.astro`
   - `styles/paper.css`：纸张色覆写（`<html data-paper>` → `--sl-color-*` 整页底/字色，派生灰阶 color-mix 不支持则整组降级），插件 customCss 注入（跟在 typography.css 后）。exports 开 `./styles/paper.css`——customCss 走包 exports 解析，不开条目消费工程构建解析失败
 - `media/`：README 插图（PNG；README 以 GitHub raw **绝对 URL** 引用，npm 包页相对路径会 404）+ `LISTING-DRAFT.md`（官方 themes 收录与 awesome-starlight 提交调研稿，2026-10-10 复核落稿；**只存稿不外发**，对外 PR 等 main 过目）。目录在仓库根、不在 `packages/` 下，**不入 npm 包面**
@@ -26,7 +26,7 @@
 - **行距档位梯度（0.2.0 起；0.4.0 改三档+行距偏好）**：控件在 `<html>` 上设 `data-lp-step`（0–4=14/15.5/17/19/22px（0.4.0 曾折衷三档 15/17/22，用户实测后 0.4.1 恢复五档）），typography.css 用 `html[data-lp-step=N]` 选择器按档设 `--lp-lh-base`（14px→2.1 / 15.5px→2.05 / 17px→2 / 19px→1.95 / 22px→1.9=0.2.x 梯度的 C 定稿值），`data-lp-spacing=0/2` 再乘 `--lp-lh-scale` 0.9/1.1（TypographyDropdown 行距档）；缩进开关 `data-typo-indent=1` → `text-indent: 2em`，最终 `line-height: calc(base×scale)`。该选择器优先级高于插件 head 注入的 `:root` 变量，不受 dev 异步 Vite 样式排序影响（避开了下方第 3 条的坑）。**插件默认档（17px）lineHeight 默认值就是 2**——首访无 JS/reset 归零都走注入值，与 `data-lp-step=1` 渲染一致；预绘制内联脚本恢复 localStorage 时必须连同 `data-lp-step`（以及 0.4.0 的 `data-lp-spacing`/`data-lp-hang`）一起恢复，否则非默认档读者首屏闪跳。非当档存值（含 0.4.0 三档折衷期的 15px 等）由预绘制脚本按最近档迁移。
 - **悬挂开关（0.4.0）**：`data-lp-hang="1"` → `hanging-punctuation: first allow-end`；Safari 与 Chromium 139+ 支持，旧引擎忽略声明即不悬挂（无副作用降级）。
 - **外观控件 storage 语义（AppearanceSelect）**：`lp-appearance` 单一真值源（auto=不存 / `light` / `dark` / `paper:<id>`），同时**镜像写 Starlight 的 `starlight-theme`**（auto→`''`、light/dark→同值、paper→绑定明暗态）。Starlight ThemeProvider 内联脚本执行顺序不可控，故 `index.ts` 预绘制脚本也**确定性写镜像**（每次加载多一次 localStorage 写，成本可忽略）——从根上消除顺序依赖，勿回退成「首帧只读」。无 `lp-appearance` 时沿用旧 `starlight-theme`（ThemeSelect 时代存量迁移）。
-- **纸张色 id 与 bg 不总相等（`ffeeee-2`）**：浅红（第 7 档）与红字（第 10 档）同底 `#FFEEEE` 不同字色，id 不能都用 bg hex——红字档定 `ffeeee-2`。存储值/事件值是 `paper:<id>`（`paper:ffeeee` / `paper:ffeeee-2`），宽匹配正则 `/^paper:[a-z0-9-]+$/i`。
+- **纸张色 id 与 bg 不总相等（`ffeeee-2`）**：浅红（第 7 档）与红字（第 10 档）同底 `#FFEEEE` 不同字色，id 不能都用 bg hex——红字档定 `ffeeee-2`。存储值/事件值是 `paper:<id>`（`paper:ffeeee` / `paper:ffeeee-2`）。主题组件本身不查正则（走 `presetOf` 精确查表）；正则是消费方 feature-tracking 侧的门槛示例：`/^paper:[a-f0-9][a-f0-9-]*$/`（`paper:xyz` / `paper:#ffeeee` / `paper:` 一律 null；兼容 `ffeeee-2` / `fffbec`）。
 - **warmDark 优先级抬权（paper.css）**：warmDark 注入 `:root[data-theme='dark']`（0,2,0）与 `:root[data-paper]`（0,2,0）打平靠源顺序——dev Vite 异步样式顺序不可靠（见下方「可调项变量不双写」条）。故 paper.css 所有纸张规则都带 `[data-theme]` 属性抬到 (0,3,0)/(0,4,0)，确定压过 warmDark 与其余 `:root` 覆写。
 
 - **本地同名字体遮蔽 webfont**：字体栈里族名顺序敏感——若 SC 排在 TC 前，装有本地 Noto Serif SC 的机器上繁体页会用本地 SC 渲染而 TC webfont 永不加载。插件用 `--lp-serif-pack` 注入把启用的族名置顶，typography.css 的 fallback 栈里**不要**写 Noto 族名。
@@ -51,6 +51,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 ## 发布流程（已执行记录）
 
 - **npm 发布**：三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc 同批对齐版本；字体包内容稳定，仅随主题批次对齐重发）。
+  - **README 双份同步（publish 硬前置）**：仓根 `README.md`（GitHub 展示）与 `packages/theme/README.md`（npm 包面，随 tarball 发布）同步维护，改一处必改另一处；插图一律 raw.githubusercontent 绝对 URL（两面同用）。
   - **0.1.0**（2026-09-26 前后）：三包首发。
   - **0.2.0 / 0.3.0**：仅仓内迭代（行距梯度、FontSizeSelect），**从未发 npm**——npm 上没有中间版本属正常，勿据版本号推断发布史。
   - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
