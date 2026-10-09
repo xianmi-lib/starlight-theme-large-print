@@ -112,9 +112,9 @@ All UI strings are `labels` props for localization — `trigger`, `followSystem`
 
 | Package | Description |
 | --- | --- |
-| [`starlight-theme-large-print`](packages/theme) | Theme core: typography, warm dark mode, font-size and appearance components |
-| [`starlight-theme-large-print-font-noto-serif-sc`](packages/font-noto-serif-sc) | Noto Serif SC webfont pack (Simplified Chinese, ~11.5 MB, 202 subsets) |
-| [`starlight-theme-large-print-font-noto-serif-tc`](packages/font-noto-serif-tc) | Noto Serif TC webfont pack (Traditional Chinese, ~10.9 MB, 216 subsets) |
+| [`starlight-theme-large-print`](https://github.com/xianmi-lib/starlight-theme-large-print/tree/main/packages/theme) | Theme core: typography, warm dark mode, font-size and appearance components |
+| [`starlight-theme-large-print-font-noto-serif-sc`](https://github.com/xianmi-lib/starlight-theme-large-print/tree/main/packages/font-noto-serif-sc) | Noto Serif SC webfont pack (Simplified Chinese, ~11.5 MB, 202 subsets) |
+| [`starlight-theme-large-print-font-noto-serif-tc`](https://github.com/xianmi-lib/starlight-theme-large-print/tree/main/packages/font-noto-serif-tc) | Noto Serif TC webfont pack (Traditional Chinese, ~10.9 MB, 216 subsets) |
 
 ## Compatibility
 
@@ -123,4 +123,4 @@ All UI strings are `labels` props for localization — `trigger`, `followSystem`
 
 ## License
 
-MIT for the theme code. The Noto Serif font files in the font packs are licensed under the [SIL Open Font License 1.1](packages/font-noto-serif-sc/OFL.txt) (© Google / Adobe).
+MIT for the theme code. The Noto Serif font files in the font packs are licensed under the [SIL Open Font License 1.1](https://github.com/xianmi-lib/starlight-theme-large-print/blob/main/packages/font-noto-serif-sc/OFL.txt) (© Google / Adobe).
