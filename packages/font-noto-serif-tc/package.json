@@ -1,7 +1,16 @@
 {
   "name": "starlight-theme-large-print-font-noto-serif-tc",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Self-hosted Noto Serif TC (Traditional Chinese) font pack for starlight-theme-large-print. Google Fonts unicode-range woff2 subsets served from your own site.",
+  "homepage": "https://www.xianmi.co/starlight/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xianmi-lib/starlight-theme-large-print.git",
+    "directory": "packages/font-noto-serif-tc"
+  },
+  "bugs": {
+    "url": "https://github.com/xianmi-lib/starlight-theme-large-print/issues"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {
