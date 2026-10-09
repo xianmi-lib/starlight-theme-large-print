@@ -2,6 +2,8 @@ import { createRequire } from 'node:module'
 
 import type { StarlightPlugin } from '@astrojs/starlight/types'
 
+import { PAPER_PRESETS } from './components/appearance-presets'
+
 export interface LargePrintConfig {
 	/**
 	 * Self-hosted CJK serif font pack(s) to enable.
@@ -54,6 +56,7 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 		hooks: {
 			'config:setup'({ config, logger, updateConfig }) {
 				const customCss = [...(config.customCss ?? []), 'starlight-theme-large-print/styles/typography.css']
+				customCss.push('starlight-theme-large-print/styles/paper.css')
 
 				// Normalize the font option to a locale→pack map. The string form
 				// is shorthand for `{ root: <pack> }` (site-wide, legacy behavior).
@@ -116,13 +119,18 @@ export default function starlightThemeLargePrint(userConfig: LargePrintConfig = 
 							content: `:root{--lp-base-size:${baseFontSize};--lp-line-height:${lineHeight};}${warmDarkCss}${packFamilyCss}`,
 						},
 						{
-							// 预绘制内联脚本：首屏内联必须静态，字号/行距/悬挂/缩进列表在此硬编码。
+							// 预绘制内联脚本：首屏内联必须静态，字号/行距/悬挂/缩进列表在此硬编码；
+							// 末段解析外观（lp-appearance / 纸张色）——纸张色表 PAPER_PRESETS 构建期
+							// JSON 序列化注入脚本头部，尾部镜像写 starlight-theme（确定性写镜像，
+							// 消除与 Starlight ThemeProvider 内联脚本的执行顺序依赖）。
 							// ⚠️ 档位列表与 FontSizeControl / FontSizeSelect / TypographyDropdown 的
 							// LP_STEPS 必须同步修改（组件各自内联打包，有意多写，改档位时几处一起改）。
 							// 非当档存值（含 0.4.0 三档折衷期的 15px 等）按最近档迁移。
 							tag: 'script',
 							content:
-								"try{var d=document.documentElement;var s=localStorage.getItem('lp-font-size');if(s){var L=['14px','15.5px','17px','19px','22px'],i=L.indexOf(s);if(i<0){var n=parseFloat(s),bd=1e9;for(var k=0;k<L.length;k++){var dd=Math.abs(parseFloat(L[k])-n);if(dd<bd){bd=dd;i=k}}}d.style.setProperty('--lp-user-size',L[i]);d.setAttribute('data-lp-step',String(i))}var sp=localStorage.getItem('lp-lh-spacing');if(sp==='0'||sp==='2'){d.setAttribute('data-lp-spacing',sp)}if(localStorage.getItem('lp-hang')==='1'){d.setAttribute('data-lp-hang','1')}if(localStorage.getItem('lp-indent')==='1'){d.setAttribute('data-typo-indent','1')}}catch(e){}",
+								`var P=${JSON.stringify(PAPER_PRESETS)};` +
+								"try{var d=document.documentElement;var s=localStorage.getItem('lp-font-size');if(s){var L=['14px','15.5px','17px','19px','22px'],i=L.indexOf(s);if(i<0){var n=parseFloat(s),bd=1e9;for(var k=0;k<L.length;k++){var dd=Math.abs(parseFloat(L[k])-n);if(dd<bd){bd=dd;i=k}}}d.style.setProperty('--lp-user-size',L[i]);d.setAttribute('data-lp-step',String(i))}var sp=localStorage.getItem('lp-lh-spacing');if(sp==='0'||sp==='2'){d.setAttribute('data-lp-spacing',sp)}if(localStorage.getItem('lp-hang')==='1'){d.setAttribute('data-lp-hang','1')}if(localStorage.getItem('lp-indent')==='1'){d.setAttribute('data-typo-indent','1')}}catch(e){}" +
+								"try{var ap=localStorage.getItem('lp-appearance');if(!ap){var st2=localStorage.getItem('starlight-theme');ap=(st2==='light'||st2==='dark')?st2:'auto'}var pmode='auto',pid=null;if(ap.indexOf('paper:')===0){var pz=ap.slice(6);for(var pi=0;pi<P.length;pi++){if(P[pi].id===pz){pid=P[pi].id;pmode=P[pi].mode;break}}if(!pid){pmode='auto'}}else if(ap==='light'||ap==='dark'){pmode=ap}var pres=pmode==='auto'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):pmode;d.setAttribute('data-theme',pres);if(pid){d.setAttribute('data-paper',pid)}else{d.removeAttribute('data-paper')}try{localStorage.setItem('starlight-theme', pid?pres:(pmode==='auto'?'':pmode))}catch(e){}}catch(e){}",
 						},
 					],
 				})

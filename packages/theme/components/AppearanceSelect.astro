@@ -1,0 +1,450 @@
+---
+/*
+ * AppearanceSelect — 「外观」下拉：跟随系统 / 浅色 / 深色 / 纸张色网格。
+ * 取代 Starlight 自带 ThemeSelect（勿两个同时渲染：storage 镜像见下）。
+ *
+ * 状态机器（单一真值源）：
+ *   - localStorage `lp-appearance`：`auto`（默认，不存）| `light` | `dark` | `paper:<id>`。
+ *   - `<html>` 上 `data-theme`（light|dark，Starlight 语义）+ `data-paper`（纸张色 id）。
+ *   - 镜像写 Starlight 的 `starlight-theme`（auto→''、light/dark→同值、paper→绑定态），
+ *     保证 Starlight ThemeProvider 内联脚本任何执行顺序都不改写错态。
+ *   - 纸张色绑定明暗态（选后不跟随系统）；要自动化=回第一项。
+ * 首帧解析在 index.ts 预绘制内联脚本（纸张色表构建期 JSON 注入）；本组件脚本管
+ * 交互、OS 监听（auto 时）与 CustomEvent `lp-appearance`（站点埋点消费，主题不依赖 GA）。
+ *
+ * Usage: place inside a Header override, REPLACING <ThemeSelect />.
+ * Pass `labels` to localize (e.g. Traditional Chinese).
+ */
+import { PAPER_PRESETS } from './appearance-presets';
+
+interface Props {
+	/** UI 文案（缺省简体；繁体站传入正体）。 */
+	labels?: {
+		/** 触发器文案（外观）。 */
+		trigger?: string;
+		/** 跟随系统行。 */
+		followSystem?: string;
+		/** 浅色行。 */
+		light?: string;
+		/** 深色行。 */
+		dark?: string;
+		/** 纸张色网格组名（aria-label）。 */
+		paperGroup?: string;
+		/** 14 色名（tooltip/aria-label），与 PAPER_PRESETS 同序。 */
+		paperNames?: string[];
+	};
+}
+
+const { labels: l = {} } = Astro.props;
+const labels = {
+	trigger: '外观',
+	followSystem: '跟随系统',
+	light: '浅色',
+	dark: '深色',
+	paperGroup: '纸张色',
+	...l,
+};
+const paperName = (i: number) => labels.paperNames?.[i] ?? PAPER_PRESETS[i]!.name;
+
+// Starlight 同款图标（sun/moon/laptop，路径取自 @astrojs/starlight Icons，MIT）
+const icons = {
+	sun: '<path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/>',
+	moon: '<path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/>',
+	laptop: '<path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/>',
+};
+---
+
+<lp-appearance class="lp-appearance">
+	<button type="button" class="lp-appearance-trigger" aria-haspopup="true" aria-expanded="false" aria-label={labels.trigger}>
+		<span class="icon label-icon" aria-hidden="true" data-lp-app-icon set:html={icons.laptop}></span>
+		<span class="trigger-label">{labels.trigger}</span>
+		<span class="paper-dot" data-lp-app-dot hidden aria-hidden="true"></span>
+		<svg class="icon caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+			<path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"></path>
+		</svg>
+	</button>
+	<div class="lp-appearance-panel" hidden>
+		<button type="button" class="lp-app-row" data-lp-app-value="auto">{labels.followSystem}</button>
+		<button type="button" class="lp-app-row" data-lp-app-value="light">{labels.light}</button>
+		<button type="button" class="lp-app-row" data-lp-app-value="dark">{labels.dark}</button>
+		<hr class="lp-divider" />
+		<div class="lp-swatch-grid" role="group" aria-label={labels.paperGroup}>
+			{PAPER_PRESETS.map((p, i) => (
+				<button
+					type="button"
+					class="lp-swatch"
+					data-lp-app-value={`paper:${p.id}`}
+					title={paperName(i)}
+					aria-label={paperName(i)}
+					aria-pressed="false"
+					style={`--swatch-bg:${p.bg};--swatch-fg:${p.text}`}
+				>
+					<span class="lp-swatch-chip" aria-hidden="true"></span>
+				</button>
+			))}
+		</div>
+	</div>
+</lp-appearance>
+
+<script>
+	// 纸张色表 import 自 appearance-presets.ts（相对导入随组件打包；index.ts 预绘制
+	// 脚本构建期序列化同一数据源——数据不双写）。
+	import { PAPER_PRESETS } from './appearance-presets';
+
+	const LP_APPEARANCE_KEY = 'lp-appearance';
+	const LP_STARLIGHT_KEY = 'starlight-theme';
+	const ICONS: Record<string, string> = {
+		sun: '<path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/>',
+		moon: '<path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/>',
+		laptop: '<path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/>',
+	};
+
+	type Mode = 'auto' | 'light' | 'dark';
+
+	function presetOf(id: string) {
+		return PAPER_PRESETS.find((p) => p.id === id);
+	}
+
+	/** 当前外观值（auto|light|dark|paper:<id>），从 storage 读，非法/缺失→auto。 */
+	function currentValue(): string {
+		let v = '';
+		try {
+			v = localStorage.getItem(LP_APPEARANCE_KEY) ?? '';
+		} catch {
+			/* private mode */
+		}
+		if (!v) {
+			// 迁移：无 lp-appearance 但有旧 starlight-theme（ThemeSelect 时代）→ 沿用
+			try {
+				const st = localStorage.getItem(LP_STARLIGHT_KEY);
+				if (st === 'light' || st === 'dark') return st;
+			} catch {
+				/* ignore */
+			}
+			return 'auto';
+		}
+		if (v === 'light' || v === 'dark' || v === 'auto') return v;
+		if (v.startsWith('paper:') && presetOf(v.slice(6))) return v;
+		return 'auto';
+	}
+
+	function osMode(): 'light' | 'dark' {
+		return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+	}
+
+	/** 应用状态到 DOM + storage 镜像；persist=false 时不动 lp-appearance（OS 切换用）。 */
+	function applyState(value: string, opts: { persist: boolean; emit: boolean }) {
+		const d = document.documentElement;
+		let mode: Mode = 'auto';
+		let paperId: string | null = null;
+		if (value.startsWith('paper:')) {
+			const p = presetOf(value.slice(6));
+			paperId = p ? p.id : null;
+			mode = p ? p.mode : 'light';
+		} else if (value === 'light' || value === 'dark') {
+			mode = value;
+		}
+		const resolved: 'light' | 'dark' = mode === 'auto' ? osMode() : mode;
+		d.setAttribute('data-theme', resolved);
+		if (paperId) d.setAttribute('data-paper', paperId);
+		else d.removeAttribute('data-paper');
+		if (opts.persist) {
+			try {
+				if (mode === 'auto') localStorage.removeItem(LP_APPEARANCE_KEY);
+				else localStorage.setItem(LP_APPEARANCE_KEY, paperId ? `paper:${paperId}` : mode);
+				// 镜像 starlight-theme：paper 写绑定态，auto 写 ''（Starlight 语义）
+				localStorage.setItem(LP_STARLIGHT_KEY, paperId ? resolved : mode === 'auto' ? '' : mode);
+			} catch {
+				/* private mode */
+			}
+		}
+		syncAll();
+		if (opts.emit) {
+			window.dispatchEvent(
+				new CustomEvent('lp-appearance', {
+					detail: { value: paperId ? `paper:${paperId}` : mode },
+				})
+			);
+		}
+	}
+
+	// ── 触发器/面板同步 ──────────────────────────────────────────────
+	const instances = new Set<Element>();
+
+	function currentValueFromDom(): string {
+		const d = document.documentElement;
+		const paper = d.getAttribute('data-paper');
+		if (paper && presetOf(paper)) return `paper:${paper}`;
+		const st = d.getAttribute('data-theme');
+		// DOM 只有 light|dark；auto 与 light 的区分看 storage
+		return st === 'dark' || st === 'light' ? (currentValue() === 'auto' && st === osMode() ? 'auto' : st) : 'auto';
+	}
+
+	function syncRoot(root: Element) {
+		const value = currentValue();
+		const isPaper = value.startsWith('paper:');
+		const mode: 'light' | 'dark' | 'auto' = isPaper
+			? (presetOf(value.slice(6))!.mode as 'light' | 'dark')
+			: (value as Mode);
+		const icon = root.querySelector('[data-lp-app-icon]');
+		if (icon) {
+			const want = mode === 'light' ? 'sun' : mode === 'dark' ? 'moon' : 'laptop';
+			const path = ICONS[want];
+			if (path && icon.getAttribute('data-lp-app-current') !== want) {
+				icon.innerHTML = path;
+				icon.setAttribute('data-lp-app-current', want);
+			}
+		}
+		const dot = root.querySelector<HTMLElement>('[data-lp-app-dot]');
+		if (dot) {
+			dot.hidden = !isPaper;
+			if (isPaper) dot.style.setProperty('--dot-color', presetOf(value.slice(6))!.bg);
+		}
+		for (const btn of root.querySelectorAll('[data-lp-app-value]')) {
+			const v = btn.getAttribute('data-lp-app-value');
+			const on = v === value;
+			btn.setAttribute('aria-pressed', String(on));
+			if (btn.classList.contains('lp-app-row')) {
+				btn.classList.toggle('is-active', on);
+			}
+		}
+	}
+
+	function syncAll() {
+		for (const root of instances) syncRoot(root);
+	}
+
+	function setOpen(root: Element, open: boolean) {
+		const trigger = root.querySelector<HTMLButtonElement>('.lp-appearance-trigger');
+		const panel = root.querySelector<HTMLElement>('.lp-appearance-panel');
+		if (!trigger || !panel) return;
+		panel.hidden = !open;
+		trigger.setAttribute('aria-expanded', String(open));
+		if (open) {
+			// 视口夹取（同 TypographyDropdown：面板平移不动触发器，320px+ 完整可见）
+			panel.style.insetInlineStart = '0px';
+			const pr = panel.getBoundingClientRect();
+			const vw = document.documentElement.clientWidth;
+			let shift = 0;
+			if (pr.left < 8) shift = 8 - pr.left;
+			else if (pr.right > vw - 8) shift = vw - 8 - pr.right;
+			if (shift !== 0) panel.style.insetInlineStart = `${shift}px`;
+		}
+	}
+
+	if (!customElements.get('lp-appearance')) {
+		class LPAppearance extends HTMLElement {
+			connectedCallback() {
+				instances.add(this);
+				syncRoot(this);
+				this.querySelector<HTMLButtonElement>('.lp-appearance-trigger')?.addEventListener('click', () =>
+					setOpen(this, this.querySelector<HTMLElement>('.lp-appearance-panel')?.hidden ?? true)
+				);
+				for (const btn of this.querySelectorAll('[data-lp-app-value]')) {
+					btn.addEventListener('click', () => {
+						applyState(btn.getAttribute('data-lp-app-value') ?? 'auto', { persist: true, emit: true });
+						setOpen(this, false);
+					});
+				}
+			}
+			disconnectedCallback() {
+				instances.delete(this);
+			}
+		}
+		customElements.define('lp-appearance', LPAppearance);
+
+		document.addEventListener('click', (e) => {
+			for (const root of instances) {
+				if (!root.contains(e.target as Node)) setOpen(root, false);
+			}
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key !== 'Escape') return;
+			for (const root of instances) {
+				const panel = root.querySelector<HTMLElement>('.lp-appearance-panel');
+				if (panel && !panel.hidden) {
+					setOpen(root, false);
+					root.querySelector<HTMLButtonElement>('.lp-appearance-trigger')?.focus();
+				}
+			}
+		});
+		// auto 态跟随 OS；paper/light/dark 不受 OS 切换干扰（只 re-sync 显示）
+		window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+			const v = currentValue();
+			if (v === 'auto' || v.startsWith('paper:')) {
+				applyState(v, { persist: false, emit: false });
+			}
+		});
+		// 外部改动同步（多实例/测试注入）
+		new MutationObserver(() => syncAll()).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme', 'data-paper'],
+		});
+		// 首帧后对齐一次（预绘制脚本已设 DOM；此处补 UI 状态）
+		syncAll();
+	}
+</script>
+
+<style>
+	@layer starlight.core {
+		.lp-appearance {
+			position: relative;
+		}
+
+		.lp-appearance-trigger {
+			--sl-label-icon-size: 1rem;
+			--sl-caret-size: 1.25rem;
+			--sl-inline-padding: 0.5rem;
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+			border: 0;
+			padding-block: 0.625rem;
+			padding-inline: calc(var(--sl-label-icon-size) + var(--sl-inline-padding) + 0.25rem)
+				calc(var(--sl-caret-size) + var(--sl-inline-padding) + 0.25rem);
+			background-color: transparent;
+			color: var(--sl-color-gray-2);
+			cursor: pointer;
+		}
+
+		.lp-appearance-trigger:is(:hover, :focus-visible) {
+			color: var(--sl-color-accent-high);
+		}
+
+		.label-icon,
+		.caret {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+		}
+
+		.label-icon {
+			inset-inline-start: 0;
+			font-size: var(--sl-label-icon-size);
+			line-height: 1;
+			display: flex;
+		}
+
+		.caret {
+			inset-inline-end: 0;
+			font-size: var(--sl-caret-size);
+			width: 1em;
+			height: 1em;
+		}
+
+		.trigger-label {
+			white-space: nowrap;
+		}
+
+		/* 选中纸张色时触发器小色点（图标右下角） */
+		.paper-dot {
+			position: absolute;
+			inset-inline-start: calc(var(--sl-label-icon-size) - 0.375rem);
+			top: calc(50% + 0.375rem);
+			width: 0.5rem;
+			height: 0.5rem;
+			border-radius: 50%;
+			background-color: var(--dot-color, var(--sl-color-gray-3));
+			border: 1px solid var(--sl-color-gray-5);
+			pointer-events: none;
+		}
+
+		@media (min-width: 50rem) {
+			.lp-appearance-trigger {
+				font-size: var(--sl-text-sm);
+			}
+		}
+
+		/* 窄视口触发器收敛为纯图标（同 TypographyDropdown 22rem 阈值与理由） */
+		@media (max-width: 22rem) {
+			.trigger-label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip-path: inset(50%);
+				white-space: nowrap;
+			}
+		}
+
+		.lp-appearance-panel {
+			position: absolute;
+			inset-inline-start: 0;
+			top: calc(100% + 0.25rem);
+			max-width: calc(100vw - 1.5rem);
+			z-index: 20;
+			width: 16.5rem;
+			padding: 0.875rem 1rem 1rem;
+			border: 1px solid var(--sl-color-gray-5);
+			border-radius: 0.5rem;
+			background-color: var(--sl-color-bg-nav);
+			box-shadow: var(--sl-shadow-md);
+			color: var(--sl-color-gray-1);
+		}
+
+		.lp-divider {
+			border: 0;
+			border-top: 1px solid var(--sl-color-gray-5);
+			margin: 0.875rem 0;
+		}
+
+		.lp-app-row {
+			display: flex;
+			align-items: center;
+			border: 0;
+			padding: 0.375rem 0.5rem;
+			margin-inline: -0.5rem;
+			width: calc(100% + 1rem);
+			background: transparent;
+			color: inherit;
+			font-size: var(--sl-text-sm);
+			text-align: start;
+			cursor: pointer;
+			border-radius: 0.25rem;
+		}
+
+		.lp-app-row:is(:hover, :focus-visible) {
+			color: var(--sl-color-accent-high);
+		}
+
+		.lp-app-row.is-active {
+			color: var(--sl-color-accent-high);
+			font-weight: 600;
+		}
+
+		.lp-swatch-grid {
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			gap: 0.375rem;
+		}
+
+		.lp-swatch {
+			border: 0;
+			padding: 0.125rem;
+			background: transparent;
+			cursor: pointer;
+			border-radius: 0.375rem;
+		}
+
+		.lp-swatch:is(:hover, :focus-visible) {
+			outline: 2px solid var(--sl-color-accent-high);
+			outline-offset: 1px;
+		}
+
+		.lp-swatch[aria-pressed='true'] {
+			outline: 2px solid var(--sl-color-accent-high);
+			outline-offset: 1px;
+		}
+
+		.lp-swatch-chip {
+			display: block;
+			width: 100%;
+			aspect-ratio: 1;
+			border-radius: 0.25rem;
+			background-color: var(--swatch-bg);
+			border: 1px solid var(--swatch-fg);
+		}
+	}
+</style>

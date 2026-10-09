@@ -1,0 +1,35 @@
+/* packages/theme/styles/paper.css
+   纸张色覆写（AppearanceSelect）：<html data-paper="<id>"> 时整页底/字色按预设。
+   派生灰阶用 color-mix（现代浏览器均支持；不支持则整组声明被忽略=维持默认色，可降级）。
+   ★优先级：warmDark 的 `:root[data-theme='dark']`（0,2,0）会与 `:root[data-paper]`（0,2,0）
+   打平靠源顺序——不可靠（dev Vite 异步样式顺序坑见 AGENTS）。故所有纸张规则带
+   `[data-theme]` 属性抬到 (0,3,0)/(0,4,0) 确定压过 warmDark 与其余 :root 覆写。 */
+:root[data-paper][data-theme] {
+	--sl-color-bg: var(--lp-paper-bg);
+	--sl-color-bg-nav: color-mix(in oklab, var(--lp-paper-bg) 92%, var(--lp-paper-text));
+	--sl-color-bg-sidebar: color-mix(in oklab, var(--lp-paper-bg) 96%, var(--lp-paper-text));
+	--sl-color-text: var(--lp-paper-text);
+	--sl-color-gray-1: var(--lp-paper-text);
+	--sl-color-gray-2: color-mix(in oklab, var(--lp-paper-text) 80%, var(--lp-paper-bg));
+	--sl-color-gray-3: color-mix(in oklab, var(--lp-paper-text) 65%, var(--lp-paper-bg));
+	--sl-color-gray-4: color-mix(in oklab, var(--lp-paper-text) 45%, var(--lp-paper-bg));
+	--sl-color-gray-5: color-mix(in oklab, var(--lp-paper-text) 30%, var(--lp-paper-bg));
+	--sl-color-gray-6: color-mix(in oklab, var(--lp-paper-text) 15%, var(--lp-paper-bg));
+	--sl-color-black: var(--lp-paper-bg);
+	--sl-color-white: var(--lp-paper-text);
+}
+
+:root[data-paper='ffffff'][data-theme] { --lp-paper-bg: #ffffff; --lp-paper-text: #666666; }
+:root[data-paper='fefbe9'][data-theme] { --lp-paper-bg: #fefbe9; --lp-paper-text: #836243; }
+:root[data-paper='f1faf8'][data-theme] { --lp-paper-bg: #f1faf8; --lp-paper-text: #55773f; }
+:root[data-paper='f9f4ff'][data-theme] { --lp-paper-bg: #f9f4ff; --lp-paper-text: #335d97; }
+:root[data-paper='fffbee'][data-theme] { --lp-paper-bg: #fffbee; --lp-paper-text: #777777; }
+:root[data-paper='f4f9ff'][data-theme] { --lp-paper-bg: #f4f9ff; --lp-paper-text: #777777; }
+:root[data-paper='ffeeee'][data-theme] { --lp-paper-bg: #ffeeee; --lp-paper-text: #666666; }
+:root[data-paper='eeeeee'][data-theme] { --lp-paper-bg: #eeeeee; --lp-paper-text: #333333; }
+:root[data-paper='f4ebe1'][data-theme] { --lp-paper-bg: #f4ebe1; --lp-paper-text: #633000; }
+:root[data-paper='ffeeee-2'][data-theme] { --lp-paper-bg: #ffeeee; --lp-paper-text: #cc3333; }
+:root[data-paper='1562a8'][data-theme] { --lp-paper-bg: #1562a8; --lp-paper-text: #ffffff; }
+:root[data-paper='006666'][data-theme] { --lp-paper-bg: #006666; --lp-paper-text: #ffffff; }
+:root[data-paper='333333'][data-theme] { --lp-paper-bg: #333333; --lp-paper-text: #cccccc; }
+:root[data-paper='191919'][data-theme] { --lp-paper-bg: #191919; --lp-paper-text: #cccccc; }

@@ -1,15 +1,16 @@
 ---
 // Default Starlight header plus the theme's FontSizeSelect dropdown.
-// The demo mirrors the production final form (font-size dropdown + theme
-// dropdown). The FontSizeControl button group remains part of the package
-// (documented in Getting Started); the demo just doesn't showcase it.
+// The demo mirrors the production final form (font-size dropdown + appearance
+// dropdown — AppearanceSelect replaces Starlight's ThemeSelect). The
+// FontSizeControl button group remains part of the package (documented in
+// Getting Started); the demo just doesn't showcase it.
 import config from 'virtual:starlight/user-config';
 
 import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
 import SocialIcons from 'virtual:starlight/components/SocialIcons';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import AppearanceSelect from 'starlight-theme-large-print/components/AppearanceSelect.astro';
 import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelect.astro';
 
 const shouldRenderSearch =
@@ -28,7 +29,7 @@ const shouldRenderSearch =
 			<SocialIcons />
 		</div>
 		<FontSizeSelect />
-		<ThemeSelect />
+		<AppearanceSelect />
 		<LanguageSelect />
 	</div>
 </div>

@@ -6,9 +6,11 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./components/AppearanceSelect.astro": "./components/AppearanceSelect.astro",
     "./components/FontSizeControl.astro": "./components/FontSizeControl.astro",
     "./components/FontSizeSelect.astro": "./components/FontSizeSelect.astro",
     "./components/TypographyDropdown.astro": "./components/TypographyDropdown.astro",
+    "./styles/paper.css": "./styles/paper.css",
     "./styles/typography.css": "./styles/typography.css",
     "./package.json": "./package.json"
   },
