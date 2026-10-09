@@ -12,6 +12,7 @@
   - `components/appearance-presets.ts`：纸张色预设表 `PAPER_PRESETS`（14 项，`{id,bg,text,mode,name}`，bg/text hex 照抄老站 set_color）。**数据单一源**：`index.ts` 预绘制脚本构建期 JSON 序列化本表，`AppearanceSelect.astro` frontmatter 与客户端脚本相对 import 同一文件——改表只改这里
   - `components/AppearanceSelect.astro`：「外观」下拉（跟随系统 / 浅色 / 深色 / 纸张色 14 色网格，面板共 17 项），取代 Starlight ThemeSelect（**勿两个同时渲染**）。状态机：localStorage `lp-appearance`（auto=不存 | `light` | `dark` | `paper:<id>`）→ `<html>` 的 `data-theme` + `data-paper`，并镜像写 `starlight-theme`；面板机器同 TypographyDropdown（视口夹取 / Esc / define-once）；交互派发窗口事件 `CustomEvent('lp-appearance')`（站点埋点消费，主题不依赖 GA）。exports 开 `./components/AppearanceSelect.astro`
   - `styles/paper.css`：纸张色覆写（`<html data-paper>` → `--sl-color-*` 整页底/字色，派生灰阶 color-mix 不支持则整组降级），插件 customCss 注入（跟在 typography.css 后）。exports 开 `./styles/paper.css`——customCss 走包 exports 解析，不开条目消费工程构建解析失败
+- `media/`：README 插图（PNG；README 以 GitHub raw **绝对 URL** 引用，npm 包页相对路径会 404）+ `LISTING-DRAFT.md`（官方 themes 收录与 awesome-starlight 提交调研稿，2026-10-10 复核落稿；**只存稿不外发**，对外 PR 等 main 过目）。目录在仓库根、不在 `packages/` 下，**不入 npm 包面**
 - `packages/font-noto-serif-sc/`、`packages/font-noto-serif-tc/`：字体扩展包（Google Fonts unicode-range 分包 woff2 + 生成的 `fonts.css` + `OFL.txt`）
 
 ## 设计红线（勿违反）
@@ -55,6 +56,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
   - **0.4.1**（2026-10-07）：实测反馈修正——字号恢复五档 + 首行缩进第四控件；三包同批补发（registry 与 main 对齐）。
   - **0.4.2**（2026-10-07）：控件间分割线 + 首行缩进控件注释禁用 + 移动端挤压修复 + 排版触发器 UI 修正（桌面字号对齐 Select、图标化阈值 22rem）四批入库；三包同批补发，registry 与 main 对齐。
+  - **0.5.0**（2026-10-10）：AppearanceSelect「外观」下拉（17 项：跟随系统/浅色/深色 + 纸张色 14 档，`lp-appearance` + `starlight-theme` 镜像 + 预绘制零闪烁）+ paper.css 纸张色覆写 + README 修订（特性/插图/行距数值勘误）+ 收录调研稿；三包同批对齐。**待 publish**（README/npm 发布动作等 main 过目后执行）。
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
 - **官方收录（未执行）**：按 [withastro/starlight CONTRIBUTING#themes](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#themes)：StackBlitz demo 装包截图（1280×720 明暗两张）→ PR 加 `themes.mdx` 条目。**前提是包已上 npm**（已满足）。
