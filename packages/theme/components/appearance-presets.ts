@@ -21,7 +21,7 @@ export const PAPER_PRESETS: readonly PaperPreset[] = [
 	{ id: 'fefbe9', bg: '#FEFBE9', text: '#836243', mode: 'light', name: '米黄' },
 	{ id: 'f1faf8', bg: '#F1FAF8', text: '#55773f', mode: 'light', name: '淡青' },
 	{ id: 'f9f4ff', bg: '#F9F4FF', text: '#335d97', mode: 'light', name: '淡紫' },
-	{ id: 'fffbee', bg: '#FFFBEC', text: '#777777', mode: 'light', name: '米白' },
+	{ id: 'fffbec', bg: '#FFFBEC', text: '#777777', mode: 'light', name: '米白' },
 	{ id: 'f4f9ff', bg: '#F4F9FF', text: '#777777', mode: 'light', name: '淡蓝' },
 	{ id: 'ffeeee', bg: '#FFEEEE', text: '#666666', mode: 'light', name: '浅红' },
 	{ id: 'eeeeee', bg: '#EEEEEE', text: '#333333', mode: 'light', name: '浅灰' },
