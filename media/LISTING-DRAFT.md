@@ -1,6 +1,9 @@
 # Listing draft — Starlight official themes + awesome lists
 
-Research date: 2026-10-10. **Draft only — nothing submitted.** All external PRs wait for maintainer review.
+Research date: 2026-10-10. Corrected 2026-10-10 (D2): this file's original 「待提交」 framing for the official listing was **factually wrong** — the official entry was already merged before this draft was written.
+
+- **withastro/starlight themes.mdx：条目已在**（title/description/href=`https://www.xianmi.co/starlight/` 与本稿一字不差），截图 `large-print-light.png` / `large-print-dark.png` 已在 `docs/src/assets/themes/`（200）——**官方 PR 无需提，截图无需重拍**（main 2026-10-10 拉官方仓 main 实证）。
+- 仍待提交的只有 riderx/awesome-starlight（§2）。
 
 Sources checked live:
 - [withastro/starlight `CONTRIBUTING.md` §Themes](https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#themes)
@@ -9,7 +12,9 @@ Sources checked live:
 
 ---
 
-## 1. withastro/starlight — official Themes page
+## 1. withastro/starlight — official Themes page（已完成，条目已在官方仓）
+
+> **状态订正（2026-10-10）**：下述条目与截图**已存在于官方仓 main**（PR 已被 merge），以下步骤仅存档为投稿格式参考，**无需再执行**。验收实证：themes.mdx 条目 title/description/href 与下方代码块一字不差；`docs/src/assets/themes/large-print-light.png`、`large-print-dark.png` 均可访问。外观下拉收起态不入画面，UI 更新不作废旧图。
 
 Per `CONTRIBUTING.md` §Themes:
 
@@ -59,7 +64,9 @@ Implications:
 
   Note: `https://www.xianmi.co` is the live demo host (`/starlight/` route, Cloudflare Workers). If a neutral demo host is preferred before submitting, repoint `href` first — the same URL is what the official `themes.mdx` entry should use.
 
-## 3. Screenshot gap (blocking for the official PR)
+## 3. Screenshot gap（已消解——官方仓存量截图即合规）
+
+> **状态订正（2026-10-10）**：官方仓 `docs/src/assets/themes/large-print-light.png` / `large-print-dark.png` 存量截图即合规（1280×720，PR merge 时已入库），**无需重拍、StackBlitz 步骤取消**。下方「缺口」分析仅存档原判断过程。
 
 Required (CONTRIBUTING, exact): two PNGs, **exactly 1280×720**, light + dark modes, produced from the **StackBlitz theme demo project** installing the published npm package, named `large-print-light.png` / `large-print-dark.png`.
 
