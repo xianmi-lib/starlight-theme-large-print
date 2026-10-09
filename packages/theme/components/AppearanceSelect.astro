@@ -56,7 +56,7 @@ const icons = {
 
 <lp-appearance class="lp-appearance">
 	<button type="button" class="lp-appearance-trigger" aria-haspopup="true" aria-expanded="false" aria-label={labels.trigger}>
-		<span class="icon label-icon" aria-hidden="true" data-lp-app-icon set:html={icons.laptop}></span>
+		<svg class="icon label-icon" aria-hidden="true" data-lp-app-icon viewBox="0 0 24 24" fill="currentColor" set:html={icons.laptop}></svg>
 		<span class="trigger-label">{labels.trigger}</span>
 		<span class="paper-dot" data-lp-app-dot hidden aria-hidden="true"></span>
 		<svg class="icon caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -191,6 +191,8 @@ const icons = {
 			const want = mode === 'light' ? 'sun' : mode === 'dark' ? 'moon' : 'laptop';
 			const path = ICONS[want];
 			if (path && icon.getAttribute('data-lp-app-current') !== want) {
+				// 载体必须是 <svg>：innerHTML 在 SVG 元素上才按 SVG 命名空间解析 <path>；
+				// 挂 HTML <span> 里 <path> 是未知元素、零渲染（C1 修复，勿改回 span）。
 				icon.innerHTML = path;
 				icon.setAttribute('data-lp-app-current', want);
 			}
@@ -323,8 +325,8 @@ const icons = {
 		.label-icon {
 			inset-inline-start: 0;
 			font-size: var(--sl-label-icon-size);
-			line-height: 1;
-			display: flex;
+			width: 1em;
+			height: 1em;
 		}
 
 		.caret {
