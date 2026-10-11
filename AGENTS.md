@@ -62,3 +62,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
 - **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) **preview worker 用 gh 提交**、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
+
+## Backlog（下版候选，未立项）
+
+- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels（xianmi-blog 2026-10-12 实例：Header 按 locale 传 14 纸色名等全量正体文案，与主站 preview-tw 逐字对齐）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。
