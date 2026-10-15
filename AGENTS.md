@@ -51,7 +51,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 ## 发布流程（已执行记录）
 
 - **npm 发布**：三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc 同批对齐版本；字体包内容稳定，仅随主题批次对齐重发）。
-  - **README 双份同步（publish 硬前置）**：仓根 `README.md`（GitHub 展示）与 `packages/theme/README.md`（npm 包面，随 tarball 发布）同步维护，改一处必改另一处；插图一律 raw.githubusercontent 绝对 URL（两面同用）。
+  - **README 双份同步（npm 发布硬前置）**：仓根 `README.md`（GitHub 展示）与 `packages/theme/README.md`（npm 包面，随 tarball 发布）同步维护，改一处必改另一处；插图一律 raw.githubusercontent 绝对 URL（两面同用）。
   - **0.1.0**（2026-09-26 前后）：三包首发。
   - **0.2.0 / 0.3.0**：仅仓内迭代（行距梯度、FontSizeSelect），**从未发 npm**——npm 上没有中间版本属正常，勿据版本号推断发布史。
   - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
@@ -65,4 +65,4 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 
 ## Backlog（下版候选，未立项）
 
-- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels（xianmi-blog 2026-10-12 实例：Header 按 locale 传 14 纸色名等全量正体文案，与主站 preview-tw 逐字对齐）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。
+- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels。已有两实例：①xianmi-blog（2026-10-12：Header 按 locale 传 14 纸色名等全量正体文案，与主站繁体端逐字对齐）；②xianmi 主站繁体端（2026-10-16 复查发现：主站 Header/Sidebar 显式传正体 labels，简体端靠主题简体缺省不传——同一消费方两端接线不对称，正是缺省 labels 缺失的痛点实证）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。
