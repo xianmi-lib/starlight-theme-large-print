@@ -17,6 +17,17 @@
 	--sl-color-gray-6: color-mix(in oklab, var(--lp-paper-text) 15%, var(--lp-paper-bg));
 	--sl-color-black: var(--lp-paper-bg);
 	--sl-color-white: var(--lp-paper-text);
+	/* accent 单色派生（2026-10-17）：纸张档不覆写 accent 时 Starlight 默认蓝
+	   （light hsl(224,100%,60%) / dark hsl(234,90%,60%)）会穿透纸张底色。
+	   派生自纸色自身两色，任意纸色零撞色；链接靠下划线维持可辨。
+	   color-mix 两条不支持则降级回默认 accent-high/low（主可见项 accent/
+	   text-accent/bg-accent/text-invert 均为纯变量引用，不受影响）。 */
+	--sl-color-accent: var(--lp-paper-text);
+	--sl-color-text-accent: var(--lp-paper-text);
+	--sl-color-bg-accent: var(--lp-paper-text);
+	--sl-color-text-invert: var(--lp-paper-bg);
+	--sl-color-accent-high: color-mix(in oklab, var(--lp-paper-text) 80%, var(--lp-paper-bg));
+	--sl-color-accent-low: color-mix(in oklab, var(--lp-paper-text) 12%, var(--lp-paper-bg));
 }
 
 :root[data-paper='ffffff'][data-theme] { --lp-paper-bg: #ffffff; --lp-paper-text: #666666; }
