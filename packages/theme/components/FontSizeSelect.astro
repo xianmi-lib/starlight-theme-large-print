@@ -110,7 +110,7 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 			color: var(--sl-color-gray-2);
 		}
 
-		/* 与 Starlight/rapide 头部控件同族：hover/focus 变 accent 色而非纯白 */
+		/* 与 Starlight 头部控件同族：hover/focus 变 accent 色而非纯白 */
 		.lp-font-size-select label:is(:hover, :focus-within) {
 			color: var(--sl-color-accent-high);
 		}
@@ -125,7 +125,7 @@ const { labels = ['小', '稍小', '标准', '大', '特大'], ariaLabel = '字�
 
 		.label-icon {
 			inset-inline-start: 0;
-			/* 纯文字 "A" 作图标用：正常字重，对齐 rapide 头部图标视觉（600 显重）。
+			/* 纯文字 "A" 作图标用：正常字重，对齐 Starlight 头部图标视觉（600 显重）。
 			   字号随档位缩放（--lp-icon-size 由组件脚本按 data-lp-step 设置，
 			   取档位 px 值本身 14–22px）；无 JS/脚本未跑时回退 1rem。 */
 			font-size: var(--lp-icon-size, var(--sl-label-icon-size));
