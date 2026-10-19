@@ -88,9 +88,9 @@ All UI strings are `labels` props for localization — `trigger`, `followSystem`
 
 ![Appearance dropdown open: follow system, light, and a grid of paper-color presets plus a night swatch](https://raw.githubusercontent.com/xianmi-lib/starlight-theme-large-print/main/media/appearance-panel-open.png)
 
-*A paper color in use — deep blue, with its bound dark mode.*
+*A paper color in use — one of the curated light-bound presets.*
 
-![Reading page on a deep-blue paper color](https://raw.githubusercontent.com/xianmi-lib/starlight-theme-large-print/main/media/paper-color-reading.png)
+![Reading page on a paper-color preset](https://raw.githubusercontent.com/xianmi-lib/starlight-theme-large-print/main/media/paper-color-reading.png)
 
 ## Options
 

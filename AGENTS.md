@@ -69,7 +69,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 
 - ~~纸张色逐档手工 accent 配色~~（2026-10-19 随 4+1 重构关闭）：0.5.2 的单色派生保留为定稿方案（accent=纸色字色零撞色；4+1 重构引入种子色→WCAG 断言生成管线，逐档手工配色需求被「断言兜底+手工微调仅断言不过处」取代）。
 
-- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图（0.6.0 起面板=跟随系统/浅色+4 纸张+夜黑）。等 demo 随 push 自动部署后重拍替换（README 用 raw 绝对 URL，重拍同名覆盖即可）。
+- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图、`media/paper-color-reading.png` 仍是已砍深蓝档（0.6.0 起面板=跟随系统/浅色+4 纸张+夜黑；图注已改通用表述过渡）。等 demo 随 push 自动部署后重拍两张替换（README 用 raw 绝对 URL，同名覆盖即可）。
 
 - **宋/楷双字体候选**（2026-10-19 用户拍板记录，不立项）：正文宋体+偈颂/引文楷体的双字体排版是中文书刻传统形态。候选路径=系统字体栈先行验证（各平台楷体族名实测：KaiTi/STKaiti/楷体 等覆盖差异），验证充分前不引入新 webfont 包。
 
