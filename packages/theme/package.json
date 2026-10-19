@@ -1,6 +1,6 @@
 {
   "name": "starlight-theme-large-print",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Elder-friendly reading theme for Astro Starlight: larger serif body text, reader font-size control, warm dark mode, optional self-hosted CJK serif fonts.",
   "homepage": "https://www.xianmi.co/starlight/",
   "repository": {

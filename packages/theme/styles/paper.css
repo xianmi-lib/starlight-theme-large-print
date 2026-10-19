@@ -30,17 +30,9 @@
 	--sl-color-accent-low: color-mix(in oklab, var(--lp-paper-text) 12%, var(--lp-paper-bg));
 }
 
-:root[data-paper='ffffff'][data-theme] { --lp-paper-bg: #ffffff; --lp-paper-text: #666666; }
-:root[data-paper='fefbe9'][data-theme] { --lp-paper-bg: #fefbe9; --lp-paper-text: #836243; }
-:root[data-paper='f1faf8'][data-theme] { --lp-paper-bg: #f1faf8; --lp-paper-text: #55773f; }
-:root[data-paper='f9f4ff'][data-theme] { --lp-paper-bg: #f9f4ff; --lp-paper-text: #335d97; }
-:root[data-paper='fffbec'][data-theme] { --lp-paper-bg: #fffbec; --lp-paper-text: #777777; }
-:root[data-paper='f4f9ff'][data-theme] { --lp-paper-bg: #f4f9ff; --lp-paper-text: #777777; }
-:root[data-paper='ffeeee'][data-theme] { --lp-paper-bg: #ffeeee; --lp-paper-text: #666666; }
-:root[data-paper='eeeeee'][data-theme] { --lp-paper-bg: #eeeeee; --lp-paper-text: #333333; }
-:root[data-paper='f4ebe1'][data-theme] { --lp-paper-bg: #f4ebe1; --lp-paper-text: #633000; }
-:root[data-paper='ffeeee-2'][data-theme] { --lp-paper-bg: #ffeeee; --lp-paper-text: #cc3333; }
-:root[data-paper='1562a8'][data-theme] { --lp-paper-bg: #1562a8; --lp-paper-text: #ffffff; }
-:root[data-paper='006666'][data-theme] { --lp-paper-bg: #006666; --lp-paper-text: #ffffff; }
-:root[data-paper='333333'][data-theme] { --lp-paper-bg: #333333; --lp-paper-text: #cccccc; }
-:root[data-paper='191919'][data-theme] { --lp-paper-bg: #191919; --lp-paper-text: #cccccc; }
+/* <GENERATED:paper-presets> 由 scripts/gen-paper-presets.mjs 生成，勿手改（改 SEEDS 重跑） */
+:root[data-paper='ffffff'][data-theme] { --lp-paper-bg: #FFFFFF; --lp-paper-text: #575757; }
+:root[data-paper='faf9de'][data-theme] { --lp-paper-bg: #FAF9DE; --lp-paper-text: #5C4A33; }
+:root[data-paper='e4f2e1'][data-theme] { --lp-paper-bg: #E4F2E1; --lp-paper-text: #3D5238; }
+:root[data-paper='e9e8cf'][data-theme] { --lp-paper-bg: #E9E8CF; --lp-paper-text: #000000; }
+/* </GENERATED:paper-presets> */

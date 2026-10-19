@@ -1,7 +1,13 @@
 ---
 /*
- * AppearanceSelect — 「外观」下拉：跟随系统 / 浅色 / 深色 / 纸张色网格。
+ * AppearanceSelect — 「外观」下拉：跟随系统 / 浅色 + 纸张色网格（4 档）+ 夜黑色块。
  * 取代 Starlight 自带 ThemeSelect（勿两个同时渲染：storage 镜像见下）。
+ *
+ * 夜黑=dark 别名（2026-10-19 十四档裁 4+1 重构，用户拍板）：夜黑不是纸张档，
+ * 选中即现有暖暗色主题（data-theme=dark、无 data-paper，storage 存 'dark'），
+ * 与独立「深色」行重复故深色行撤除——存量 dark 读者无感，UI 上由夜黑色块呈选中态。
+ * 被砍档存量读者回落：storage 里已删除的 paper:<id> → currentValue 判未知档即清
+ * storage 回落 auto（预绘制脚本同样对未知 id 回落 auto，双保险）。
  *
  * 状态机器（单一真值源）：
  *   - localStorage `lp-appearance`：`auto`（默认，不存）| `light` | `dark` | `paper:<id>`。
@@ -26,11 +32,11 @@ interface Props {
 		followSystem?: string;
 		/** 浅色行。 */
 		light?: string;
-		/** 深色行。 */
+		/** 夜黑色块名（=dark 别名，纸张色网格最后一枚）。 */
 		dark?: string;
 		/** 纸张色网格组名（aria-label）。 */
 		paperGroup?: string;
-		/** 14 色名（tooltip/aria-label），与 PAPER_PRESETS 同序。 */
+		/** 纸张色名（tooltip/aria-label），与 PAPER_PRESETS 同序。 */
 		paperNames?: string[];
 	};
 }
@@ -40,11 +46,15 @@ const labels = {
 	trigger: '外观',
 	followSystem: '跟随系统',
 	light: '浅色',
-	dark: '深色',
+	dark: '夜黑',
 	paperGroup: '纸张色',
 	...l,
 };
 const paperName = (i: number) => labels.paperNames?.[i] ?? PAPER_PRESETS[i]!.name;
+
+// 夜黑色块预览色：bg=暖暗色主题底 oklch(16% 0.012 60)（≈#110c08，scripts/gen-paper-presets.mjs
+// 打印值），fg=暗色文本近白。仅 swatch 展示用，真值走 dark 主题本体。
+const NIGHT_CHIP = { bg: '#110c08', fg: '#ebebeb' };
 
 // Starlight 同款图标（sun/moon/laptop，路径取自 @astrojs/starlight Icons，MIT）
 const icons = {
@@ -66,7 +76,6 @@ const icons = {
 	<div class="lp-appearance-panel" hidden>
 		<button type="button" class="lp-app-row" data-lp-app-value="auto">{labels.followSystem}</button>
 		<button type="button" class="lp-app-row" data-lp-app-value="light">{labels.light}</button>
-		<button type="button" class="lp-app-row" data-lp-app-value="dark">{labels.dark}</button>
 		<hr class="lp-divider" />
 		<div class="lp-swatch-grid" role="group" aria-label={labels.paperGroup}>
 			{PAPER_PRESETS.map((p, i) => (
@@ -82,6 +91,18 @@ const icons = {
 					<span class="lp-swatch-chip" aria-hidden="true"></span>
 				</button>
 			))}
+			{/* 夜黑=dark 别名（非纸张档，选中存 'dark'，无 data-paper） */}
+			<button
+				type="button"
+				class="lp-swatch"
+				data-lp-app-value="dark"
+				title={labels.dark}
+				aria-label={labels.dark}
+				aria-pressed="false"
+				style={`--swatch-bg:${NIGHT_CHIP.bg};--swatch-fg:${NIGHT_CHIP.fg}`}
+			>
+				<span class="lp-swatch-chip" aria-hidden="true"></span>
+			</button>
 		</div>
 	</div>
 </lp-appearance>
@@ -124,7 +145,15 @@ const icons = {
 			return 'auto';
 		}
 		if (v === 'light' || v === 'dark' || v === 'auto') return v;
-		if (v.startsWith('paper:') && presetOf(v.slice(6))) return v;
+		if (v.startsWith('paper:')) {
+			if (presetOf(v.slice(6))) return v;
+			// 被砍档存量读者（2026-10-19 十四档裁 4+1）：storage 里是已删除的 id → 清掉回落 auto
+			try {
+				localStorage.removeItem(LP_APPEARANCE_KEY);
+			} catch {
+				/* private mode */
+			}
+		}
 		return 'auto';
 	}
 

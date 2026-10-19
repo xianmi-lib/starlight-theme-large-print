@@ -9,7 +9,7 @@ An elder-friendly reading theme for [Astro Starlight](https://starlight.astro.bu
 - **Large serif body text** — 17px / 2.0 line height by default (Starlight ships 16px / 1.75), with slightly looser paragraph rhythm. All values are plain CSS variables, no `!important`.
 - **Reader font-size control** — an `A− A A+` component with five steps (14–22px), persisted to `localStorage` and re-applied before first paint (no flash). Line height scales with the chosen step — smaller sizes get looser leading (14px→2.10, 15.5px→2.05, 17px→`lineHeight` (2.0 by default), 19px→1.95, 22px→1.90).
 - **Warm dark mode** — shifts the dark background from blue-black to a paper-like warm brown.
-- **Appearance & paper-color control** — an "Appearance" dropdown that replaces Starlight's theme picker with 17 choices: follow system / light / dark, plus 14 paper colors (warm reading backgrounds, each bound to a light or dark mode). Persisted to `localStorage` and re-applied before first paint (no flash).
+- **Appearance & paper-color control** — an "Appearance" dropdown that replaces Starlight's theme picker: follow system / light, plus four curated paper-color presets (warm reading backgrounds, body text at WCAG AAA contrast) and a night swatch that aliases the dark theme. Persisted to `localStorage` and re-applied before first paint (no flash).
 - **Optional self-hosted CJK webfonts** — Noto Serif SC / TC packs built from Google Fonts' `unicode-range` woff2 subsets, served from your own site. Visitors only download the handful of subsets their page actually uses (typically < 200 KB). Works where Google Fonts is blocked.
 - **Plays well with other themes** — typography-only by design; tested alongside [`starlight-theme-rapide`](https://github.com/HiDeoo/starlight-theme-rapide).
 
@@ -68,7 +68,7 @@ import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelec
 
 ### Appearance & paper-color control
 
-`AppearanceSelect` (0.5.0+) is a dropdown that **replaces** Starlight's `<ThemeSelect />` — do not render both (it mirrors its state to Starlight's `starlight-theme` key, so the two never fight over the theme). It offers 17 choices — follow system / light / dark, plus 14 paper colors, each bound to a light or dark mode — persisted to `localStorage` and re-applied before first paint. Like the font-size control, it is exported but not auto-injected; render it in your Header override:
+`AppearanceSelect` (0.5.0+) is a dropdown that **replaces** Starlight's `<ThemeSelect />` — do not render both (it mirrors its state to Starlight's `starlight-theme` key, so the two never fight over the theme). It offers follow system / light, plus four curated paper-color presets (each bound to a light mode, body text at WCAG AAA contrast) and a night swatch that aliases the dark theme — persisted to `localStorage` and re-applied before first paint. Like the font-size control, it is exported but not auto-injected; render it in your Header override:
 
 ```astro
 ---
@@ -78,15 +78,15 @@ import AppearanceSelect from 'starlight-theme-large-print/components/AppearanceS
 <AppearanceSelect />
 ```
 
-All UI strings are `labels` props for localization — `trigger`, `followSystem`, `light`, `dark`, `paperGroup`, and `paperNames` (14 color names in preset order). Defaults are Simplified Chinese:
+All UI strings are `labels` props for localization — `trigger`, `followSystem`, `light`, `dark` (the night swatch name), `paperGroup`, and `paperNames` (color names in preset order). Defaults are Simplified Chinese:
 
 ```astro
-<AppearanceSelect labels={{ trigger: '外觀', followSystem: '跟隨系統', light: '淺色', dark: '深色', paperGroup: '紙張色' }} />
+<AppearanceSelect labels={{ trigger: '外觀', followSystem: '跟隨系統', light: '淺色', dark: '夜黑', paperGroup: '紙張色' }} />
 ```
 
-*The Appearance dropdown: follow system / light / dark, plus 14 paper colors.*
+*The Appearance dropdown: follow system / light, plus paper-color presets and a night swatch.*
 
-![Appearance dropdown open: follow system, light, dark, and a grid of 14 paper colors](https://raw.githubusercontent.com/xianmi-lib/starlight-theme-large-print/main/media/appearance-panel-open.png)
+![Appearance dropdown open: follow system, light, and a grid of paper-color presets plus a night swatch](https://raw.githubusercontent.com/xianmi-lib/starlight-theme-large-print/main/media/appearance-panel-open.png)
 
 *A paper color in use — deep blue, with its bound dark mode.*
 
