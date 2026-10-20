@@ -2,8 +2,9 @@
 /**
  * gen-paper-presets.mjs — 纸张色预设单一真值源：种子色 → WCAG 断言 → 生成双份产物。
  *
- * 背景（2026-10-19，4+1 重构）：14 档裁为 4 档纸张 + 夜黑（夜黑=暗色主题别名，
- * 不是纸张档，不在本表）。方法论=「种子色→派生+断言」（派生规则在 paper.css 通用块
+ * 背景（2026-10-19，4+1 重构）：14 档裁为 4 档纸张（夜黑曾作暗色主题别名色块，
+ * 0.6.1 用户拍板撤销、恢复独立「深色」文字行，均不在本表——本表只管纸张档）。
+ * 方法论=「种子色→派生+断言」（派生规则在 paper.css 通用块
  * 用 color-mix 表达，本脚本用 OKLab 混合复算断言）：
  *   - 正文 text vs bg          ≥ 7.0（WCAG AAA 正常字）
  *   - gray-2（text 80% 混合）vs bg ≥ 4.5（WCAG AA 正常字；链接/次文本档位）
@@ -23,7 +24,7 @@ import { fileURLToPath } from 'node:url';
 
 const PKG = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-/** 种子表：4 档纸张（全 light 绑定）。夜黑不入表——它是暗色主题的别名（见 AppearanceSelect）。 */
+/** 种子表：4 档纸张（全 light 绑定）。「深色」行/暗色主题不入表——不属纸张档。 */
 const SEEDS = [
 	{ id: 'ffffff', bg: '#FFFFFF', text: '#575757', mode: 'light', name: '白' },
 	// 杏仁黄族（经典护眼浅棕心智）；字色暖深棕，AAA 7.94
@@ -72,11 +73,6 @@ const oklabMix = (textHex, p, bgHex) => {
 	const b = srgbToOklab(bgHex);
 	return oklabToHex([0, 1, 2].map((i) => t[i] * p + b[i] * (1 - p)));
 };
-const oklchToHex = (L, C, h) => {
-	const a = C * Math.cos((h * Math.PI) / 180);
-	const b = C * Math.sin((h * Math.PI) / 180);
-	return oklabToHex([L, a, b]);
-};
 
 // ── 断言 ──────────────────────────────────────────────────────────
 let failed = 0;
@@ -103,14 +99,10 @@ if (failed) {
 	process.exit(1);
 }
 
-// 夜黑色块预览色（ AppearanceSelect 的「夜黑」swatch 用）：暖暗色主题底 = oklch(16% 0.012 60)
-const nightBg = oklchToHex(0.16, 0.012, 60);
-console.log(`\n夜黑 swatch 预览色：bg=${nightBg}（= 暖暗色 --sl-color-black oklch(16% 0.012 60)，仅色块展示用）`);
-
 // ── 产物生成 ──────────────────────────────────────────────────────
 const presetsTs = `// ⚠️ 本文件由 scripts/gen-paper-presets.mjs 生成（种子色→WCAG 断言→双份产物），
 // 勿手改——改种子色请改脚本 SEEDS 表后重跑（--check 为漂移门禁）。
-// 纸张色预设（4 档；2026-10-19 十四档裁四 + 夜黑改暗色主题别名，见 AppearanceSelect）。
+// 纸张色预设（4 档；2026-10-19 十四档裁四，见 AppearanceSelect）。
 // mode = 该预设绑定的明/暗态。id = bg 小写 hex 无 '#'（data-paper 与存储值用）。
 export interface PaperPreset {
 	/** 小写 hex，无 '#'。 */

@@ -1,6 +1,6 @@
 // ⚠️ 本文件由 scripts/gen-paper-presets.mjs 生成（种子色→WCAG 断言→双份产物），
 // 勿手改——改种子色请改脚本 SEEDS 表后重跑（--check 为漂移门禁）。
-// 纸张色预设（4 档；2026-10-19 十四档裁四 + 夜黑改暗色主题别名，见 AppearanceSelect）。
+// 纸张色预设（4 档；2026-10-19 十四档裁四，见 AppearanceSelect）。
 // mode = 该预设绑定的明/暗态。id = bg 小写 hex 无 '#'（data-paper 与存储值用）。
 export interface PaperPreset {
 	/** 小写 hex，无 '#'。 */
