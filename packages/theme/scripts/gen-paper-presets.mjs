@@ -26,12 +26,14 @@ import { fileURLToPath } from 'node:url';
 const PKG = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** 种子表：3 档纸张（全 light 绑定）。「浅色」行即白色、与纸档不重复；
- * 白纸档 0.6.2 裁撤（用户拍板：与浅色行实质重复）。「深色」行/暗色主题不入表。 */
+ * 白纸档 0.6.2 裁撤（用户拍板：与浅色行实质重复）。「深色」行/暗色主题不入表。
+ * 浅棕/护眼绿色值=微信读书网页版（0.6.3 用户拍板，色值无版权问题）；字色 #1C1C1D 同源。
+ * id=bg hex 随值变（faf9de→f6f2e1、e4f2e1→d3efd1），存量读者走未知 id 回落 auto。 */
 const SEEDS = [
-	// 杏仁黄族（经典护眼浅棕心智）；字色暖深棕，AAA 7.94
-	{ id: 'faf9de', bg: '#FAF9DE', text: '#5C4A33', mode: 'light', name: '浅棕' },
-	// 豆沙绿暖向（替代旧冷薄荷 f1faf8；参考 CCE8CF 族调浅调暖）；字色墨绿，AAA 7.34
-	{ id: 'e4f2e1', bg: '#E4F2E1', text: '#3D5238', mode: 'light', name: '护眼绿' },
+	// 微信读书「黄」bg #F6F2E1
+	{ id: 'f6f2e1', bg: '#F6F2E1', text: '#1C1C1D', mode: 'light', name: '浅棕' },
+	// 微信读书「绿」bg #D3EFD1
+	{ id: 'd3efd1', bg: '#D3EFD1', text: '#1C1C1D', mode: 'light', name: '护眼绿' },
 	// 老站怀旧纸底色（定值），黑字 16.9:1
 	{ id: 'e9e8cf', bg: '#E9E8CF', text: '#000000', mode: 'light', name: '怀旧纸' },
 ];

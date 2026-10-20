@@ -16,7 +16,7 @@ export interface PaperPreset {
 }
 
 export const PAPER_PRESETS: readonly PaperPreset[] = [
-	{ id: 'faf9de', bg: '#FAF9DE', text: '#5C4A33', mode: 'light', name: '浅棕' },
-	{ id: 'e4f2e1', bg: '#E4F2E1', text: '#3D5238', mode: 'light', name: '护眼绿' },
+	{ id: 'f6f2e1', bg: '#F6F2E1', text: '#1C1C1D', mode: 'light', name: '浅棕' },
+	{ id: 'd3efd1', bg: '#D3EFD1', text: '#1C1C1D', mode: 'light', name: '护眼绿' },
 	{ id: 'e9e8cf', bg: '#E9E8CF', text: '#000000', mode: 'light', name: '怀旧纸' },
 ];
