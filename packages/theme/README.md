@@ -9,7 +9,7 @@ An elder-friendly reading theme for [Astro Starlight](https://starlight.astro.bu
 - **Large serif body text** — 17px / 2.0 line height by default (Starlight ships 16px / 1.75), with slightly looser paragraph rhythm. All values are plain CSS variables, no `!important`.
 - **Reader font-size control** — an `A− A A+` component with five steps (14–22px), persisted to `localStorage` and re-applied before first paint (no flash). Line height scales with the chosen step — smaller sizes get looser leading (14px→2.10, 15.5px→2.05, 17px→`lineHeight` (2.0 by default), 19px→1.95, 22px→1.90).
 - **Warm dark mode** — shifts the dark background from blue-black to a paper-like warm brown.
-- **Appearance & paper-color control** — an "Appearance" dropdown that replaces Starlight's theme picker: follow system / light / dark, plus four curated paper-color presets (warm reading backgrounds, body text at WCAG AAA contrast). Persisted to `localStorage` and re-applied before first paint (no flash).
+- **Appearance & paper-color control** — an "Appearance" dropdown that replaces Starlight's theme picker: follow system / light / dark, plus three curated paper-color presets (warm reading backgrounds, body text at WCAG AAA contrast). Persisted to `localStorage` and re-applied before first paint (no flash).
 - **Optional self-hosted CJK webfonts** — Noto Serif SC / TC packs built from Google Fonts' `unicode-range` woff2 subsets, served from your own site. Visitors only download the handful of subsets their page actually uses (typically < 200 KB). Works where Google Fonts is blocked.
 - **Plays well with other themes** — typography-only by design; tested alongside [`starlight-theme-rapide`](https://github.com/HiDeoo/starlight-theme-rapide).
 
@@ -68,7 +68,7 @@ import FontSizeSelect from 'starlight-theme-large-print/components/FontSizeSelec
 
 ### Appearance & paper-color control
 
-`AppearanceSelect` (0.5.0+) is a dropdown that **replaces** Starlight's `<ThemeSelect />` — do not render both (it mirrors its state to Starlight's `starlight-theme` key, so the two never fight over the theme). It offers follow system / light / dark (the warm dark theme), plus four curated paper-color presets (each bound to a light mode, body text at WCAG AAA contrast) — persisted to `localStorage` and re-applied before first paint. Like the font-size control, it is exported but not auto-injected; render it in your Header override:
+`AppearanceSelect` (0.5.0+) is a dropdown that **replaces** Starlight's `<ThemeSelect />` — do not render both (it mirrors its state to Starlight's `starlight-theme` key, so the two never fight over the theme). It offers follow system / light / dark (the warm dark theme), plus three curated paper-color presets (each bound to a light mode, body text at WCAG AAA contrast) — persisted to `localStorage` and re-applied before first paint. Like the font-size control, it is exported but not auto-injected; render it in your Header override:
 
 ```astro
 ---

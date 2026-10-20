@@ -2,7 +2,8 @@
 /**
  * gen-paper-presets.mjs — 纸张色预设单一真值源：种子色 → WCAG 断言 → 生成双份产物。
  *
- * 背景（2026-10-19，4+1 重构）：14 档裁为 4 档纸张（夜黑曾作暗色主题别名色块，
+ * 背景（2026-10-19，4+1 重构；2026-10-20 裁至 3 档）：14 档裁为 3 档纸张
+ *（白纸档 0.6.2 裁撤——与「浅色」行实质重复；夜黑曾作暗色主题别名色块，
  * 0.6.1 用户拍板撤销、恢复独立「深色」文字行，均不在本表——本表只管纸张档）。
  * 方法论=「种子色→派生+断言」（派生规则在 paper.css 通用块
  * 用 color-mix 表达，本脚本用 OKLab 混合复算断言）：
@@ -24,9 +25,9 @@ import { fileURLToPath } from 'node:url';
 
 const PKG = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-/** 种子表：4 档纸张（全 light 绑定）。「深色」行/暗色主题不入表——不属纸张档。 */
+/** 种子表：3 档纸张（全 light 绑定）。「浅色」行即白色、与纸档不重复；
+ * 白纸档 0.6.2 裁撤（用户拍板：与浅色行实质重复）。「深色」行/暗色主题不入表。 */
 const SEEDS = [
-	{ id: 'ffffff', bg: '#FFFFFF', text: '#575757', mode: 'light', name: '白' },
 	// 杏仁黄族（经典护眼浅棕心智）；字色暖深棕，AAA 7.94
 	{ id: 'faf9de', bg: '#FAF9DE', text: '#5C4A33', mode: 'light', name: '浅棕' },
 	// 豆沙绿暖向（替代旧冷薄荷 f1faf8；参考 CCE8CF 族调浅调暖）；字色墨绿，AAA 7.34
@@ -102,7 +103,7 @@ if (failed) {
 // ── 产物生成 ──────────────────────────────────────────────────────
 const presetsTs = `// ⚠️ 本文件由 scripts/gen-paper-presets.mjs 生成（种子色→WCAG 断言→双份产物），
 // 勿手改——改种子色请改脚本 SEEDS 表后重跑（--check 为漂移门禁）。
-// 纸张色预设（4 档；2026-10-19 十四档裁四，见 AppearanceSelect）。
+// 纸张色预设（3 档；2026-10-20 白纸档裁撤——与「浅色」行重复，见 AppearanceSelect）。
 // mode = 该预设绑定的明/暗态。id = bg 小写 hex 无 '#'（data-paper 与存储值用）。
 export interface PaperPreset {
 	/** 小写 hex，无 '#'。 */

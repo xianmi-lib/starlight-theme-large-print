@@ -9,8 +9,8 @@
   - `styles/typography.css`：排版核心（字号/行高/段距/衬线栈/页标题），全部走 CSS 变量
   - `components/FontSizeControl.astro`：A−/A/A+ 字号按钮（五档 14–22px，localStorage，自定义元素 `<lp-font-size>`）
   - `components/FontSizeSelect.astro`：下拉变体（0.3.0 起，原生 `<select>`，档位名 labels 参数化）——与 FontSizeControl **共用同一 LP_KEY/data-lp-step 机制**，两组件脚本里的 LP_KEY/LP_STEPS/apply 是**有意双写**（组件各自内联打包，无法共享模块），改档位必须两处同步
-  - `components/appearance-presets.ts`：纸张色预设表 `PAPER_PRESETS`（4 档，`{id,bg,text,mode,name}`）。**⚠️ 本文件由 `scripts/gen-paper-presets.mjs` 生成，勿手改**：种子色只改脚本 SEEDS 表，脚本跑 WCAG 断言（正文 AAA≥7 / gray-2 派生 AA≥4.5）后生成①本文件②`styles/paper.css` 的 GENERATED 标记块；`--check` 是漂移门禁。`index.ts` 预绘制脚本构建期 JSON 序列化本表、`AppearanceSelect.astro` 相对 import 同一文件（数据不双写）。
-  - `components/AppearanceSelect.astro`：「外观」下拉（跟随系统 / 浅色 / 深色 三文字行 + 纸张色 4 档网格；0.6.1 用户拍板撤销 0.6.0 的「夜黑色块=dark 别名」（认知混乱），恢复深色文字行=0.5.2 语义，暖暗色主题本体不动；被砍档存量 storage 值判未知 id 即清并回落 auto），取代 Starlight ThemeSelect（**勿两个同时渲染**）。状态机：localStorage `lp-appearance`（auto=不存 | `light` | `dark` | `paper:<id>`）→ `<html>` 的 `data-theme` + `data-paper`，并镜像写 `starlight-theme`；面板机器同 TypographyDropdown（视口夹取 / Esc / define-once）；交互派发窗口事件 `CustomEvent('lp-appearance')`（站点埋点消费，主题不依赖 GA）。exports 开 `./components/AppearanceSelect.astro`
+  - `components/appearance-presets.ts`：纸张色预设表 `PAPER_PRESETS`（3 档，`{id,bg,text,mode,name}`）。**⚠️ 本文件由 `scripts/gen-paper-presets.mjs` 生成，勿手改**：种子色只改脚本 SEEDS 表，脚本跑 WCAG 断言（正文 AAA≥7 / gray-2 派生 AA≥4.5）后生成①本文件②`styles/paper.css` 的 GENERATED 标记块；`--check` 是漂移门禁。`index.ts` 预绘制脚本构建期 JSON 序列化本表、`AppearanceSelect.astro` 相对 import 同一文件（数据不双写）。
+  - `components/AppearanceSelect.astro`：「外观」下拉（跟随系统 / 浅色 / 深色 三文字行 + 纸张色 3 档网格；0.6.1 用户拍板撤销 0.6.0 的「夜黑色块=dark 别名」（认知混乱），恢复深色文字行=0.5.2 语义，暖暗色主题本体不动；0.6.2 白纸档裁撤（与浅色行实质重复）；被砍档存量 storage 值判未知 id 即清并回落 auto），取代 Starlight ThemeSelect（**勿两个同时渲染**）。状态机：localStorage `lp-appearance`（auto=不存 | `light` | `dark` | `paper:<id>`）→ `<html>` 的 `data-theme` + `data-paper`，并镜像写 `starlight-theme`；面板机器同 TypographyDropdown（视口夹取 / Esc / define-once）；交互派发窗口事件 `CustomEvent('lp-appearance')`（站点埋点消费，主题不依赖 GA）。exports 开 `./components/AppearanceSelect.astro`
   - `styles/paper.css`：纸张色覆写（`<html data-paper>` → `--sl-color-*` 整页底/字色+accent 单色派生，派生灰阶 color-mix 不支持则整组降级），插件 customCss 注入（跟在 typography.css 后）；**末尾每档变量规则是 gen-paper-presets.mjs 生成的 GENERATED 标记块，勿手改**。exports 开 `./styles/paper.css`——customCss 走包 exports 解析，不开条目消费工程构建解析失败
   - `scripts/gen-paper-presets.mjs`：纸张色种子色→WCAG 断言→双份产物生成器（`--check`=漂移门禁）。改档位/色值只改它的 SEEDS
 - `media/`：README 插图（PNG；README 以 GitHub raw **绝对 URL** 引用，npm 包页相对路径会 404）+ `LISTING-DRAFT.md`（官方 themes 收录与 awesome-starlight 提交调研稿，2026-10-10 复核落稿并做事实订正——官方双线已在、#4254 归因；对外动作记录见下「官方收录」条）。目录在仓库根、不在 `packages/` 下，**不入 npm 包面**
@@ -63,6 +63,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - **0.5.2**（2026-10-17）：paper.css 纸张档补 accent 一族单色派生（accent/text-accent/bg-accent/text-invert 取纸色字底两色，accent-high/low color-mix 派生）——此前纸张档不覆写 accent，Starlight 默认蓝在纸张底上穿透；三包同批对齐。
   - **0.6.0**（2026-10-19）：纸张色 14 档裁 4 档（白/浅棕/护眼绿/怀旧纸，全 AAA 断言）+ gen-paper-presets.mjs 种子色→WCAG 断言生成管线；深色行撤除、改夜黑色块=dark 别名（当日被用户拍板推翻，见 0.6.1）；三包同批对齐。
   - **0.6.1**（2026-10-20）：外观面板设计修订（用户拍板）——恢复「跟随系统/浅色/深色」三文字行惯例（深色行=0.5.2 语义，走暖暗色主题本体），纸张色网格仅 4 档，夜黑色块撤除（NIGHT_CHIP 及关联代码删除）；三包同批对齐。
+  - **0.6.2**（2026-10-20）：白纸档裁撤（用户拍板——白纸与「浅色」行实质重复且字色带老站血统），纸张色 4→3 档（浅棕/护眼绿/怀旧纸），网格 repeat(4)→repeat(3)；三包同批对齐。
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
 - **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) **preview worker 用 gh 提交**、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
@@ -71,7 +72,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 
 - ~~纸张色逐档手工 accent 配色~~（2026-10-19 随 4+1 重构关闭）：0.5.2 的单色派生保留为定稿方案（accent=纸色字色零撞色；4+1 重构引入种子色→WCAG 断言生成管线，逐档手工配色需求被「断言兜底+手工微调仅断言不过处」取代）。
 
-- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图、`media/paper-color-reading.png` 仍是已砍深蓝档（0.6.1 起面板=跟随系统/浅色/深色+4 纸张网格；图注已改通用表述过渡）。等 demo 随 push 自动部署后重拍两张替换（README 用 raw 绝对 URL，同名覆盖即可）。
+- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图、`media/paper-color-reading.png` 仍是已砍深蓝档（0.6.2 起面板=跟随系统/浅色/深色+3 纸张网格；图注已改通用表述过渡）。等 demo 随 push 自动部署后重拍两张替换（README 用 raw 绝对 URL，同名覆盖即可）。
 
 - **宋/楷双字体候选**（2026-10-19 用户拍板记录，不立项）：正文宋体+偈颂/引文楷体的双字体排版是中文书刻传统形态。候选路径=系统字体栈先行验证（各平台楷体族名实测：KaiTi/STKaiti/楷体 等覆盖差异），验证充分前不引入新 webfont 包。
 

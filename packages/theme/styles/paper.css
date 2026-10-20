@@ -31,7 +31,6 @@
 }
 
 /* <GENERATED:paper-presets> 由 scripts/gen-paper-presets.mjs 生成，勿手改（改 SEEDS 重跑） */
-:root[data-paper='ffffff'][data-theme] { --lp-paper-bg: #FFFFFF; --lp-paper-text: #575757; }
 :root[data-paper='faf9de'][data-theme] { --lp-paper-bg: #FAF9DE; --lp-paper-text: #5C4A33; }
 :root[data-paper='e4f2e1'][data-theme] { --lp-paper-bg: #E4F2E1; --lp-paper-text: #3D5238; }
 :root[data-paper='e9e8cf'][data-theme] { --lp-paper-bg: #E9E8CF; --lp-paper-text: #000000; }
