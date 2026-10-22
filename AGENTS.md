@@ -41,13 +41,8 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 
 ## demo 部署（CF Workers Builds 自动构建，2026-10-05 起生效）
 
-- **唯一部署通道**：push 到 `main` 且触及 `demo/` 或 `packages/theme/`（watch paths）即触发 CF 云端构建+部署。**本地 `npm run deploy` 已退役，禁止本地/CF 双轨部署**（产物 scoped-style hash 随环境不同，双轨会造成资产频繁翻滚）。
-- 配置：root directory=`demo`、build command=`npm run build`、deploy command=`npx wrangler deploy`、branch=`main`、previews 关。路由（`www.xianmi.co/starlight*` 等）在 `demo/wrangler.jsonc`，云端 deploy 只更新资产不动路由。
-- 凭证：build token 由 dashboard Builds 向导自动铸；token 值与 UUID 等账号级细节一律留内部档，不入本文件。轮换：dashboard 重铸或 CLI 登记后换绑 trigger。
-- **只保留一条构建配置**（2026-10-05 事故）：CLI 建的一套与 dashboard 向导建的一套曾并存，push 会双重构建且 dashboard 那条 path_includes 曾绕过 watch paths。现已收敛为 dashboard 那条（watch paths=`['demo/*','packages/theme/*']`），CLI 那条 trigger 已删。改动 Builds 配置后用 `cf builds triggers list` 核实仍只有一条（trigger/external_script 等 ID 留内部档）。
-- 手动重触（免 push）：`cf builds create` 当前会 12002（CLI 缺陷），用 deploy hook 代替——`cf builds deploy-hooks trigger <hook-id>`（名 `manual-retrigger`，branch=main；hook UUID 留内部档）。
-- 构建环境实证（2026-10-05）：node 24.18 / npm 10.9.2，`npm clean-install` 走 lockfile；npm allow-scripts 会拦 esbuild/workerd 的 postinstall 但 optionalDependencies 平台二进制可用，不影响构建；构建全程约 26 秒（含部署）。
-- 旧坑备查：曾误用一枚无效 build token 时构建卡在 initializing 阶段 `unable to verify Worker` → terminated——即 token 无效时构建连 build command 都到不了，排障先看 build token 绑定。
+- **唯一部署通道**：push 到 `main` 且触及 `demo/` 或 `packages/theme/`（watch paths）即触发云端构建+部署。本地 `npm run deploy` 已退役，禁止本地/云端双轨部署（产物 scoped-style hash 随环境不同，双轨会造成资产频繁翻滚）。
+- 凭证与触发器等账号级细节一律留内部运维档，不入本仓；运维流程（重触/轮换/排障）同。
 
 ## 发布流程（已执行记录）
 
@@ -67,7 +62,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - **0.6.3**（2026-10-20）：浅棕/护眼绿改用微信读书网页版原值（用户拍板，色值无版权）——bg #F6F2E1 / #D3EFD1、字色均 #1C1C1D（AAA 15.17/13.82）；id 随 bg 变（faf9de→f6f2e1、e4f2e1→d3efd1），存量读者走未知 id 回落 auto；三包同批对齐。
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
-- **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) **preview worker 用 gh 提交**、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
+- **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) 由维护端用 gh 提交、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
 
 ## Backlog（下版候选，未立项）
 
@@ -77,4 +72,4 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
 
 - **宋/楷双字体候选**（2026-10-19 用户拍板记录，不立项）：正文宋体+偈颂/引文楷体的双字体排版是中文书刻传统形态。候选路径=系统字体栈先行验证（各平台楷体族名实测：KaiTi/STKaiti/楷体 等覆盖差异），验证充分前不引入新 webfont 包。
 
-- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels。已有两实例：①xianmi-blog（2026-10-12：Header 按 locale 传纸色名等全量正体文案，与主站繁体端逐字对齐）；②xianmi 主站繁体端（2026-10-16 复查发现：主站 Header/Sidebar 显式传正体 labels，简体端靠主题简体缺省不传——同一消费方两端接线不对称，正是缺省 labels 缺失的痛点实证）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。
+- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels。已有两实例：①作者另一站点（博客，私有仓；2026-10-12：Header 按 locale 传纸色名等全量正体文案，与主站繁体端逐字对齐）；②主站繁体端（2026-10-16 复查发现：主站 Header/Sidebar 显式传正体 labels，简体端靠主题简体缺省不传——同一消费方两端接线不对称，正是缺省 labels 缺失的痛点实证）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。

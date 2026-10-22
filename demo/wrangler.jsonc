@@ -5,8 +5,8 @@
 	"assets": {
 		"directory": "./dist"
 	},
-	// 生产路由（2026-10-05 由 publish 挂接）：星号形态同时覆盖 /starlight 与 /starlight/*；
-	// 「更具体者优先」压过 cn worker 的 xianmi.co/* 与 www.xianmi.co/*，与 tw 挂 /zh-tw/* 同机制
+	// 生产路由（2026-10-05 挂接）：星号形态同时覆盖 /starlight 与 /starlight/*；
+	// Cloudflare 路由「更具体者优先」，星号形态压过站点根通配 xianmi.co/* 与 www.xianmi.co/*
 	"routes": [
 		{ "pattern": "www.xianmi.co/starlight*", "zone_name": "xianmi.co" },
 		{ "pattern": "xianmi.co/starlight*", "zone_name": "xianmi.co" }

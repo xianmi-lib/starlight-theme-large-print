@@ -3,8 +3,8 @@
 Research date: 2026-10-10. Corrected 2026-10-10 (D2): this file's original 「待提交」 framing for the official listing was **factually wrong** — the official entry was already merged before this draft was written.
 
 - **withastro/starlight 收录双线均已在官方仓（勿重复 PR）**：
-  1. **主题线** `resources/themes.mdx`：Large Print 条目已在（title/description/href=`https://www.xianmi.co/starlight/` 与本稿 §1 一字不差），截图 `large-print-light.png` / `large-print-dark.png` 已在 `docs/src/assets/themes/`（200）——PR 已 merge，截图无需重拍（main 2026-10-10 拉官方仓 main 实证）。
-  2. **插件线** `resources/plugins.mdx`：`starlight-ai-actions` 已入 community plugins（描述 "Markdown tools menu and AI-discussion buttons for your documentation pages"），PR [withastro/starlight#4254](https://github.com/withastro/starlight/pull/4254)（docs: add starlight-ai-actions to community plugins）**已 Merged**。★归因订正（用户 2026-10-10）：#4254 是 preview worker 用 gh 提交的（main 通报误写为用户亲手提交），主题线条目为用户提交。
+  1. **主题线** `resources/themes.mdx`：Large Print 条目已在（title/description/href=`https://www.xianmi.co/starlight/` 与本稿 §1 一字不差），截图 `large-print-light.png` / `large-print-dark.png` 已在 `docs/src/assets/themes/`（200）——PR 已 merge，截图无需重拍（2026-10-10 拉官方仓 main 分支实证）。
+  2. **插件线** `resources/plugins.mdx`：`starlight-ai-actions` 已入 community plugins（描述 "Markdown tools menu and AI-discussion buttons for your documentation pages"），PR [withastro/starlight#4254](https://github.com/withastro/starlight/pull/4254)（docs: add starlight-ai-actions to community plugins）**已 Merged**。★归因订正（2026-10-10）：#4254 由维护端用 gh 提交（此前误记为用户亲手提交），主题线条目为用户提交。
 - 仍待提交的只有 riderx/awesome-starlight（§2）。
 
 Sources checked live:
