@@ -23,6 +23,11 @@
     "./styles/typography.css": "./styles/typography.css",
     "./package.json": "./package.json"
   },
+  "files": [
+    "index.ts",
+    "components",
+    "styles"
+  ],
   "peerDependencies": {
     "@astrojs/starlight": ">=0.42.0"
   },

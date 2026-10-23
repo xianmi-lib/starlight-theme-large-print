@@ -1,6 +1,6 @@
 # AGENTS.md — starlight-theme-large-print
 
-开源 Starlight 主题（elder-friendly / 大字阅读），面向社区。源于显密文库项目（`../AGENTS.md` 有项目群全貌），但本仓库是**独立通用项目**，代码与文档不引用本站私货。
+开源 Starlight 主题（elder-friendly / 大字阅读），面向社区。源于显密文库项目（www.xianmi.co），但本仓库是**独立通用项目**，代码与文档不引用本站私货。
 
 ## 仓库结构
 
@@ -60,6 +60,7 @@ Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/styl
   - **0.6.1**（2026-10-20）：外观面板设计修订（用户拍板）——恢复「跟随系统/浅色/深色」三文字行惯例（深色行=0.5.2 语义，走暖暗色主题本体），纸张色网格仅 4 档，夜黑色块撤除（NIGHT_CHIP 及关联代码删除）；三包同批对齐。
   - **0.6.2**（2026-10-20）：白纸档裁撤（用户拍板——白纸与「浅色」行实质重复且字色带老站血统），纸张色 4→3 档（浅棕/护眼绿/怀旧纸），网格 repeat(4)→repeat(3)；三包同批对齐。
   - **0.6.3**（2026-10-20）：浅棕/护眼绿改用微信读书网页版原值（用户拍板，色值无版权）——bg #F6F2E1 / #D3EFD1、字色均 #1C1C1D（AAA 15.17/13.82）；id 随 bg 变（faf9de→f6f2e1、e4f2e1→d3efd1），存量读者走未知 id 回落 auto；三包同批对齐。
+  - **0.6.4**（2026-10-21）：附录修复批——bootstrap 脏字号 NaN 兜底（精确匹配→parseFloat 迁档→默认档三级链）、AppearanceSelect 死代码清除；三包同批，registry latest=0.6.4。★版本记录：对外版本史=`packages/theme/CHANGELOG.md`（npm 自动随 tarball 发布，包页可见）；本节后续只记发布坑与流程，版本内容不在此复写。
   - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
   - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
 - **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) 由维护端用 gh 提交、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
