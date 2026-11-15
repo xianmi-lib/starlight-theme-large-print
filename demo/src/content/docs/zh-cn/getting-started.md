@@ -26,7 +26,7 @@ export default defineConfig({
         starlightThemeLargePrint({
           font: 'noto-serif-sc', // 'noto-serif-sc' | 'noto-serif-tc' | false
           // baseFontSize: '17px',
-          // lineHeight: 1.85,
+          // lineHeight: 2.0,
           // warmDark: true,
         }),
       ],
@@ -79,5 +79,5 @@ starlightThemeLargePrint({
 | --- | --- | --- |
 | `font` | `false` | `'noto-serif-sc'` \| `'noto-serif-tc'` \| `false` \| locale→字体包映射。需安装对应的字体包。 |
 | `baseFontSize` | `'17px'` | 正文字号基准；读者可用字号控件覆盖。 |
-| `lineHeight` | `1.85` | 正文行高。 |
+| `lineHeight` | `2.0` | 正文行高。 |
 | `warmDark` | `true` | 暖纸色调的暗色模式背景。 |

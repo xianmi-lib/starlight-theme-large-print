@@ -26,7 +26,7 @@ export default defineConfig({
         starlightThemeLargePrint({
           font: 'noto-serif-sc', // 'noto-serif-sc' | 'noto-serif-tc' | false
           // baseFontSize: '17px',
-          // lineHeight: 1.85,
+          // lineHeight: 2.0,
           // warmDark: true,
         }),
       ],
@@ -79,5 +79,5 @@ Install every pack you reference; pages in locales without an entry fall back to
 | --- | --- | --- |
 | `font` | `false` | `'noto-serif-sc'` \| `'noto-serif-tc'` \| `false` \| locale→pack map. Requires the matching font package(s). |
 | `baseFontSize` | `'17px'` | Base body font size; readers can override it with the font-size control. |
-| `lineHeight` | `1.85` | Body line height. |
+| `lineHeight` | `2.0` | Body line height. |
 | `warmDark` | `true` | Warm paper-tone dark mode background. |

@@ -7,7 +7,7 @@ This page demonstrates the theme's typographic voice: a quiet serif for long-for
 
 ## Reading comfort first
 
-The theme sets body text at 17px with a 1.85 line height — a deliberate step up from Starlight's 16px / 1.75 defaults. Paragraphs breathe a little more, and headings stay in the same serif family as the body so the reading voice never breaks.
+The theme sets body text at 17px with a 2.0 line height — a deliberate step up from Starlight's 16px / 1.75 defaults. Paragraphs breathe a little more, and headings stay in the same serif family as the body so the reading voice never breaks.
 
 ### Smaller heading
 
