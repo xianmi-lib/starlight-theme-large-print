@@ -39,38 +39,19 @@
 
 Starlight 升级时 diff 消费工程 `node_modules/@astrojs/starlight/dist/style/` 的 `props.css`（变量名）与 `markdown.css`（`.sl-markdown-content` 选择器写法）——主题的扩展点都在这两个文件里。GitHub main 仅作超前参考，以钉住版本的本地产物为准。
 
-## demo 部署（CF Workers Builds 自动构建，2026-10-05 起生效）
+## demo、验证与发布
 
-- **唯一部署通道**：push 到 `main` 且触及 `demo/` 或 `packages/theme/`（watch paths）即触发云端构建+部署。本地 `npm run deploy` 已退役，禁止本地/云端双轨部署（产物 scoped-style hash 随环境不同，双轨会造成资产频繁翻滚）。
-- 凭证与触发器等账号级细节一律留内部运维档，不入本仓；运维流程（重触/轮换/排障）同。
-
-## 发布流程（已执行记录）
-
-- **npm 发布**：三包 `npm publish --access public`（theme / font-noto-serif-sc / font-noto-serif-tc 同批对齐版本；字体包内容稳定，仅随主题批次对齐重发）。
-  - **README 双份同步（npm 发布硬前置）**：仓根 `README.md`（GitHub 展示）与 `packages/theme/README.md`（npm 包面，随 tarball 发布）同步维护，改一处必改另一处；插图一律 raw.githubusercontent 绝对 URL（两面同用）。
-  - **0.1.0**（2026-09-26 前后）：三包首发。
-  - **0.2.0 / 0.3.0**：仅仓内迭代（行距梯度、FontSizeSelect），**从未发 npm**——npm 上没有中间版本属正常，勿据版本号推断发布史。
-  - **0.4.0**（2026-10-07）：TypographyDropdown 三控件（字号三档折衷）+ 三包同批发。
-  - **0.4.1**（2026-10-07）：实测反馈修正——字号恢复五档 + 首行缩进第四控件；三包同批补发（registry 与 main 对齐）。
-  - **0.4.2**（2026-10-07）：控件间分割线 + 首行缩进控件注释禁用 + 移动端挤压修复 + 排版触发器 UI 修正（桌面字号对齐 Select、图标化阈值 22rem）四批入库；三包同批补发，registry 与 main 对齐。
-  - **0.5.0**（2026-10-10 实发）：AppearanceSelect「外观」下拉（17 项：跟随系统/浅色/深色 + 纸张色 14 档，`lp-appearance` + `starlight-theme` 镜像 + 预绘制零闪烁）+ paper.css 纸张色覆写 + README 修订（特性/插图/行距数值勘误、Packages/License 链接改 GitHub 绝对 URL）+ 收录调研稿；三包同批对齐，registry `latest=0.5.0`（字体包大包走处理管道，`npm view` CLI 有缓存滞后，以 `registry.npmjs.org/<pkg>` JSON 的 versions/dist-tags 为准）。**npm 包页外链 rel 实证（2026-10-10，webbridge 真浏览器）**：README 里 xianmi.co 链接带 `rel="nofollow"`；raw.githubusercontent 插图链接 `rel="noopener noreferrer nofollow"`；github.com（Packages 表/OFL）链接无 rel 属性=可跟进。
-  - **0.5.1**（2026-10-10 实发）：npm 元数据补全（用户指出双包页不对称）——三包 package.json 补 `homepage=https://www.xianmi.co/starlight/` + `repository`（含 `directory` 各包目录）+ `bugs`，font 两包补最小 README（原28字符空页）。**侧栏 rel 补充实证**：npm 侧栏 Homepage 与 Repository 链接均为 `noopener noreferrer nofollow`——xianmi.co 从 npm 无 follow 权重出口，收益=包页展示与直接点击；可跟进的只有 README 正文内 github.com 链接与侧栏 issues/pulls 计数链。
-  - **0.5.2**（2026-10-17）：paper.css 纸张档补 accent 一族单色派生（accent/text-accent/bg-accent/text-invert 取纸色字底两色，accent-high/low color-mix 派生）——此前纸张档不覆写 accent，Starlight 默认蓝在纸张底上穿透；三包同批对齐。
-  - **0.6.0**（2026-10-19）：纸张色 14 档裁 4 档（白/浅棕/护眼绿/怀旧纸，全 AAA 断言）+ gen-paper-presets.mjs 种子色→WCAG 断言生成管线；深色行撤除、改夜黑色块=dark 别名（当日被用户拍板推翻，见 0.6.1）；三包同批对齐。
-  - **0.6.1**（2026-10-20）：外观面板设计修订（用户拍板）——恢复「跟随系统/浅色/深色」三文字行惯例（深色行=0.5.2 语义，走暖暗色主题本体），纸张色网格仅 4 档，夜黑色块撤除（NIGHT_CHIP 及关联代码删除）；三包同批对齐。
-  - **0.6.2**（2026-10-20）：白纸档裁撤（用户拍板——白纸与「浅色」行实质重复且字色带老站血统），纸张色 4→3 档（浅棕/护眼绿/怀旧纸），网格 repeat(4)→repeat(3)；三包同批对齐。
-  - **0.6.3**（2026-10-20）：浅棕/护眼绿改用微信读书网页版原值（用户拍板，色值无版权）——bg #F6F2E1 / #D3EFD1、字色均 #1C1C1D（AAA 15.17/13.82）；id 随 bg 变（faf9de→f6f2e1、e4f2e1→d3efd1），存量读者走未知 id 回落 auto；三包同批对齐。
-  - **0.6.4**（2026-10-21）：附录修复批——bootstrap 脏字号 NaN 兜底（精确匹配→parseFloat 迁档→默认档三级链）、AppearanceSelect 死代码清除；三包同批，registry latest=0.6.4。★版本记录：对外版本史=`packages/theme/CHANGELOG.md`（npm 自动随 tarball 发布，包页可见）；本节后续只记发布坑与流程，版本内容不在此复写。
-  - 凭证纪律：token 在用户侧 `~/.npmrc`（`//registry.npmjs.org/:_authToken=`，bypass-2FA granular token），token 值不落任何文件；2FA 未 bypass 时 publish 会 EOTP 要求浏览器授权。
-  - npm 新发布走处理管道，`npm publish` 成功后 `npm view` 约 1–2 分钟才转绿，勿立刻误判失败。
-- **官方收录（已执行，2026-10-10 复核）**：双线均已在 withastro/starlight 官方仓（[themes 页](https://starlight.astro.build/resources/themes/) / [plugins 页](https://starlight.astro.build/resources/plugins/)）：①主题 `resources/themes.mdx` 条目（title/description/href=`https://www.xianmi.co/starlight/`）+ `docs/src/assets/themes/large-print-light.png`/`large-print-dark.png` 两张截图已在（用户亲手提交并 merge，截图存量即合规、无需重拍）；②插件 `resources/plugins.mdx` 的 `starlight-ai-actions` 条目在（[PR #4254](https://github.com/withastro/starlight/pull/4254) 由维护端用 gh 提交、已 Merged——勿再重复提官方 PR）。awesome 列表：`riderx/awesome-starlight` [PR #5](https://github.com/riderx/awesome-starlight/pull/5)（Large Print + starlight-ai-actions 同 PR）2026-10-10 提交待审；`trueberryless-org/awesome-starlight` 自动收录已有（URL 为过期 workers.dev，watch 其是否随官方条目更新）。
+- 公开 demo 为 `https://www.xianmi.co/starlight/`。改 demo 后运行其标准 build 与现有浏览器/WCAG 检查；公开教程和 README 只描述可复用的安装与配置方式。
+- 三包（theme / font-noto-serif-sc / font-noto-serif-tc）同批对齐版本；对外版本史=`packages/theme/CHANGELOG.md`，不在本文件重复版本流水账。
+- **README 双份同步**：仓根 `README.md` 与 `packages/theme/README.md` 同步维护；插图一律 raw.githubusercontent 绝对 URL。版本 bump 后同步各 package/package-lock 与 demo 依赖规格，registry 形态应与真实用户安装一致。
+- 官方收录见 [Starlight themes](https://starlight.astro.build/resources/themes/) 与 [Starlight plugins](https://starlight.astro.build/resources/plugins/)；已收录条目勿重复提交。awesome-list 调研只保留公开条目与公开 demo URL。
 
 ## Backlog（下版候选，未立项）
 
 - ~~纸张色逐档手工 accent 配色~~（2026-10-19 随 4+1 重构关闭）：0.5.2 的单色派生保留为定稿方案（accent=纸色字色零撞色；4+1 重构引入种子色→WCAG 断言生成管线，逐档手工配色需求被「断言兜底+手工微调仅断言不过处」取代）。
 
-- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图、`media/paper-color-reading.png` 仍是已砍深蓝档（0.6.2 起面板=跟随系统/浅色/深色+3 纸张网格；图注已改通用表述过渡）。等 demo 随 push 自动部署后重拍两张替换（README 用 raw 绝对 URL，同名覆盖即可）。
+- **README 插图重拍**：`media/appearance-panel-open.png` 仍是 14 档网格旧图、`media/paper-color-reading.png` 仍是已砍深蓝档（0.6.2 起面板=跟随系统/浅色/深色+3 纸张网格；图注已改通用表述过渡）。下次更新 demo 后重拍两张替换（README 用 raw 绝对 URL，同名覆盖即可）。
 
 - **宋/楷双字体候选**（2026-10-19 用户拍板记录，不立项）：正文宋体+偈颂/引文楷体的双字体排版是中文书刻传统形态。候选路径=系统字体栈先行验证（各平台楷体族名实测：KaiTi/STKaiti/楷体 等覆盖差异），验证充分前不引入新 webfont 包。
 
-- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels。已有两实例：①作者另一站点（博客，私有仓；2026-10-12：Header 按 locale 传纸色名等全量正体文案，与主站繁体端逐字对齐）；②主站繁体端（2026-10-16 复查发现：主站 Header/Sidebar 显式传正体 labels，简体端靠主题简体缺省不传——同一消费方两端接线不对称，正是缺省 labels 缺失的痛点实证）。下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。
+- **组件内置简繁 i18n 默认 labels（按页 `<html lang>` 自适应）**：TypographyDropdown/AppearanceSelect 现缺省简体，繁体消费方须逐站传正体 labels。现有简体与繁体两个消费实例证明了默认 labels 的复用价值；下版主题可内置 zh-Hans/zh-Hant 两套缺省按页 lang 自动选，消费方零 props。

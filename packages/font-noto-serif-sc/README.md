@@ -10,6 +10,6 @@ npm install starlight-theme-large-print starlight-theme-large-print-font-noto-se
 
 For Traditional Chinese pages use [`starlight-theme-large-print-font-noto-serif-tc`](https://www.npmjs.com/package/starlight-theme-large-print-font-noto-serif-tc) instead.
 
-Born from [显密文库 xianmi.co](https://www.xianmi.co/), a large-scale Chinese digital library for elderly readers of classical texts.
+Born from [显密文库 xianmi.co](https://www.xianmi.co/), a large-scale Buddhist digital library for all readers, with an accessibility layer for older readers.
 
 Font files are licensed under the [SIL Open Font License 1.1](https://github.com/xianmi-lib/starlight-theme-large-print/blob/main/packages/font-noto-serif-sc/OFL.txt) (© Google / Adobe).

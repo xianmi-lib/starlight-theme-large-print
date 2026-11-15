@@ -52,12 +52,12 @@ Two live lists found (no `astro-community/awesome-starlight` exists):
 
 | List | Nature | Our status |
 | --- | --- | --- |
-| [`trueberryless-org/awesome-starlight`](https://github.com/trueberryless-org/awesome-starlight) (36★) | Themes/Plugins sections **auto-discovered weekly** (npm name/keywords containing `starlight`, or presence in official Starlight docs) | **Already listed** as "Large Print" → `https://starlight-theme-large-print.chenlong365.workers.dev/` (stale workers.dev URL) |
+| [`trueberryless-org/awesome-starlight`](https://github.com/trueberryless-org/awesome-starlight) (36★) | Themes/Plugins sections **auto-discovered weekly** (npm name/keywords containing `starlight`, or presence in official Starlight docs) | **Already listed** as "Large Print" (upstream URL may lag behind the official demo) |
 | [`riderx/awesome-starlight`](https://github.com/riderx/awesome-starlight) (24★) | Manual PR list, [sindresorhus/awesome guidelines](https://github.com/sindresorhus/awesome/blob/main/contributing.md) | Not listed — PR possible |
 
 Implications:
 
-- For `trueberryless-org/awesome-starlight`: **no PR needed** for the Themes section (auto). Levers are (a) landing the official `themes.mdx` entry and (b) keeping `starlight` in the npm package name/keywords. The stale workers.dev URL is worth watching after the official listing goes live — whether the auto-updater adopts the `themes.mdx` `href` is unverified.
+- For `trueberryless-org/awesome-starlight`: **no PR needed** for the Themes section (auto). Levers are (a) landing the official `themes.mdx` entry and (b) keeping `starlight` in the npm package name/keywords. Whether the auto-updater adopts the official `themes.mdx` `href` is unverified.
 - For `riderx/awesome-starlight`, proposed entry (append under `### List of themes`, style `- [Name](demo-url) - description.`):
 
   ```md
